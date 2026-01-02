@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">boleias</string>
+    <string name="erro_ligacao_internet">não há internet</string>
+    <string name="erro_credenciais">erro nas credênciais</string>
+    <string name="dados_invalidos">dados inválidos!</string>
+    <string name="viaturas">viaturas</string>
+    <string name="navBoleias">boleias</string>
+    <string name="navReservas">reservas</string>
+    <string name="navViaturas">viaturas</string>
+    <string name="navWishlist">wishlist</string>
+    <string name="ndOpen">open</string>
+    <string name="ndClose">close</string>
+    <string name="marca">marca\n</string>
+    <string name="modelo">modelo\n\n</string>
+    <string name="matricula">matricula\n</string>
+    <string name="cor">cor\n</string>
+    <string name="perfil_id">perfil_id</string>
+    <string name="viatura_adicionada_com_sucesso">Viatura adicionada com sucesso!</string>
+    <string name="viatura_modificada_com_sucesso">Viatura modificada com sucesso!</string>
+    <string name="viatura_removida_com_sucesso">Viatura removida com sucesso!</string>
+    <string name="pesquisa">Pesquisa</string>
+    <string name="txt_detalhes">"Detalhes: "</string>
+    <string name="txt_adicionar_viatura">Adicionar Viatura</string>
+    <string name="txt_tem_a_certeza_que_pretende_remover_a_viatura">Tem a certeza que pretende remover a viatura?</string>
+    <string name="txt_sim">Sim</string>
+    <string name="txt_remover_viatura">Remover Viatura</string>
+    <string name="txt_cancelar">Cancelar</string>
+
+
+
+
+
+
+</resources>
