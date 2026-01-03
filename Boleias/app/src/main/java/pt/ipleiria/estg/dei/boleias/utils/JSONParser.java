@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import pt.ipleiria.estg.dei.boleias.modelos.Boleia;
 import pt.ipleiria.estg.dei.boleias.modelos.User;
 import pt.ipleiria.estg.dei.boleias.modelos.Viatura;
 
@@ -38,7 +39,7 @@ public class JSONParser {
     }
 
 
-
+    // viaturas
     public static Viatura parserJsonViatura(String response){
 
 
@@ -84,6 +85,63 @@ public class JSONParser {
         }
 
         return viaturas;
+    }
+
+
+    // boleias
+
+    public static Boleia parserJsonBoleia(String response){
+
+
+        Boleia auxBoleia = null;
+        try{
+            JSONObject boleia = new JSONObject(response);
+
+            int id = boleia.getInt("id");
+            String origem = boleia.getString("origem");
+            String destino = boleia.getString("destino");
+            String data_hora = boleia.getString("data_hora");
+            int lugares_disponiveis = boleia.getInt("lugares_disponiveis");
+            double preco = boleia.getDouble("preco");
+            int viatura_id = boleia.getInt("viatura_id");
+
+
+
+            auxBoleia = new Boleia(id, origem, destino, data_hora, lugares_disponiveis, preco, viatura_id);
+
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return auxBoleia;
+    }
+
+    public static ArrayList<Boleia> parserJsonBoleias(JSONArray response){
+
+        ArrayList<Boleia> boleias = new ArrayList<>();
+
+        try{
+            for (int i=0; i< response.length(); i++){
+
+                JSONObject boleia = response.getJSONObject(i);
+
+                int id = boleia.getInt("id");
+                String origem = boleia.getString("origem");
+                String destino = boleia.getString("destino");
+                String data_hora = boleia.getString("data_hora");
+                int lugares_disponiveis = boleia.getInt("lugares_disponiveis");
+                double preco = boleia.getDouble("preco");
+                int viatura_id = boleia.getInt("viatura_id");
+
+                Boleia auxBoleia = new Boleia(id, origem, destino, data_hora, lugares_disponiveis, preco, viatura_id);
+
+                boleias.add(auxBoleia);
+            }
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        return boleias;
     }
 
 

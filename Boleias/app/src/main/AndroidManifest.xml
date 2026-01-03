@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Boleias"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".DetalhesBoleiaActivity"
+            android:exported="false" />
+        <activity
             android:name=".DetalhesViaturaActivity"
             android:exported="false" />
         <activity

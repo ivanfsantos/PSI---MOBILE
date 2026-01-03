@@ -30,7 +30,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="338dp"
+            android:layout_height="343dp"
             android:layout_weight="1"
             android:orientation="vertical">
 
@@ -44,49 +44,59 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/etMarca"
+                android:id="@+id/etOrigem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Marca"
+                android:hint="Origem"
                 android:inputType="text"
                 android:minHeight="48dp" />
 
             <EditText
-                android:id="@+id/etModelo"
+                android:id="@+id/etDestino"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Modelo"
+                android:hint="Destino"
                 android:inputType="text"
                 android:minHeight="48dp" />
 
             <EditText
-                android:id="@+id/etMatricula"
+                android:id="@+id/etData_hora"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Data e Hora"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="none"
+                android:minHeight="48dp" />
+
+            <EditText
+                android:id="@+id/etLugares_disponiveis"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Matricula"
+                android:hint="Lugares Disponíveis"
                 android:inputType="text"
                 android:minHeight="48dp" />
 
             <EditText
-                android:id="@+id/etCor"
+                android:id="@+id/etPreco"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Cor"
-                android:inputType="text"
-                android:minHeight="48dp" />
-
-            <EditText
-                android:id="@+id/etPerfil_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Perfil_id"
+                android:hint="Preco"
                 android:inputType="number"
                 android:minHeight="48dp" />
+
+            <Spinner
+                android:id="@+id/spViaturas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                tools:listitem="@android:layout/simple_spinner_item" />
 
 
         </LinearLayout>

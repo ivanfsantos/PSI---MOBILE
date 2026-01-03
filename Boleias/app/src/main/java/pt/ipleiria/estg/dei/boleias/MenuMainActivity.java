@@ -86,34 +86,6 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
     }
 
 
-    private void openFragmentById(int id, String title) {
-
-        Fragment fragment = null;
-
-        if (id == R.id.navBoleias) {
-            //  fragment = new ListaViaturasFragment();
-            //  setTitle(item.getTitle());
-        }
-
-        else if (id == R.id.navReservas) {
-            // fragment = new ListaViaturasFragment();
-            // setTitle(item.getTitle());
-        }
-
-        else if (id == R.id.navViaturas) {
-            fragment = new ListaViaturasFragment();
-
-        }
-
-        else if (id == R.id.navWishlist) {
-            // fragment = new ListaViaturasFragment();
-        }
-
-        if (fragment != null) {
-            setTitle(title);
-            fragmentManager.beginTransaction().replace(R.id.contentFragment, fragment).commit();
-        }
-    }
 
 
     private void carregarCabecalho() {
@@ -157,39 +129,41 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-        Fragment fragment = null;
         int id = item.getItemId();
 
         editor.putInt("LAST_FRAGMENT", id);
         editor.apply();
 
+        openFragmentById(id, item.getTitle().toString());
+
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void openFragmentById(int id, String title) {
+        Fragment fragment = null;
+
         if (id == R.id.navBoleias) {
-            //  fragment = new ListaViaturasFragment();
-            //  setTitle(item.getTitle());
-        }
 
-        else if (id == R.id.navReservas) {
-            // fragment = new ListaViaturasFragment();
-            // setTitle(item.getTitle());
-        }
+            fragment = new ListaBoleiasFragment();
 
+        }
         else if (id == R.id.navViaturas) {
             fragment = new ListaViaturasFragment();
-
         }
-
+        else if (id == R.id.navReservas) {
+            // fragment = new ListaReservasFragment();
+        }
         else if (id == R.id.navWishlist) {
-           // fragment = new ListaViaturasFragment();
+            // fragment = new ListaWishlistFragment();
         }
 
-        if (fragment != null){
-            setTitle(item.getTitle());
+        if (fragment != null) {
+            setTitle(title);
             fragmentManager.beginTransaction()
                     .replace(R.id.contentFragment, fragment)
                     .commit();
         }
-
-        drawer.closeDrawer(GravityCompat.START);
-        return false;
     }
+
 }

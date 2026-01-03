@@ -61,7 +61,6 @@ public class DetalhesViaturaActivity extends AppCompatActivity implements Viatur
         });
 
         getToken();
-        getPerfil_id();
 
         viatura = Singleton.getInstance(getApplicationContext()).getViatura(idViatura);
 
@@ -133,16 +132,12 @@ public class DetalhesViaturaActivity extends AppCompatActivity implements Viatur
     }
 
     private void getToken() {
-        sharedPreferences = getSharedPreferences("DADOS_USER", Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
-        token = sharedPreferences.getString(MenuMainActivity.TOKEN, "SEM TOKEN");
+        SharedPreferences sharedPreferences = getSharedPreferences("DADOS_USER", Context.MODE_PRIVATE);
+        // Change from "TOKEN" to "token" and "PERFIL_ID" to "perfil_id"
+        token = sharedPreferences.getString("token", null);
+        perfil_id = sharedPreferences.getString("perfil_id", null);
     }
 
-    private void getPerfil_id() {
-        sharedPreferences = getSharedPreferences("DADOS_USER", Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
-        perfil_id = sharedPreferences.getString(MenuMainActivity.PERFIL_ID, "0");
-    }
 
 
     private boolean isViaturaValido() {

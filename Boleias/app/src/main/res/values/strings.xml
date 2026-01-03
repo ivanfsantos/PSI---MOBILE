@@ -18,17 +18,26 @@
     <string name="viatura_adicionada_com_sucesso">Viatura adicionada com sucesso!</string>
     <string name="viatura_modificada_com_sucesso">Viatura modificada com sucesso!</string>
     <string name="viatura_removida_com_sucesso">Viatura removida com sucesso!</string>
+    <string name="boleia_adicionada_com_sucesso">Boleia adicionada com sucesso!</string>
+    <string name="boleia_modificada_com_sucesso">Boleia modificada com sucesso!</string>
+    <string name="boleia_removida_com_sucesso">Boleia removida com sucesso!</string>
     <string name="pesquisa">Pesquisa</string>
     <string name="txt_detalhes">"Detalhes: "</string>
     <string name="txt_adicionar_viatura">Adicionar Viatura</string>
+    <string name="txt_adicionar_boleia">Adicionar Boleia</string>
     <string name="txt_tem_a_certeza_que_pretende_remover_a_viatura">Tem a certeza que pretende remover a viatura?</string>
+    <string name="txt_tem_a_certeza_que_pretende_remover_a_boleia">Tem a certeza que pretende remover a boleia?</string>
     <string name="txt_sim">Sim</string>
     <string name="txt_remover_viatura">Remover Viatura</string>
+    <string name="txt_remover_boleia">Remover Boleia</string>
     <string name="txt_cancelar">Cancelar</string>
-
-
-
-
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="origem">origem\n</string>
+    <string name="destino">destino</string>
+    <string name="data_hora">data_hora\n</string>
+    <string name="lugares_disponiveis">lugares_disponiveis\n</string>
+    <string name="preco">preco</string>
+    <string name="viatura_id">viatura_id\n</string>
 
 
 </resources>
