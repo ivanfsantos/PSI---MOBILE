@@ -7,24 +7,10 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:orientation="vertical"
-    tools:context=".DetalhesViaturaActivity">
+    tools:context=".DetalhesReservaActivity">
 
     <include layout="@layout/app_bar_main" />
 
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabGuardar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_weight="1"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="48dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:backgroundTint="#4CAF50"
-        app:srcCompat="@drawable/ic_action_guardar"
-        tools:ignore="SpeakableTextPresentCheck" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,7 +18,7 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <LinearLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="338dp"
             android:layout_weight="1"
@@ -48,52 +34,74 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/etMarca"
+                android:id="@+id/etOrigem"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Marca"
+                android:hint="Origem"
                 android:inputType="text"
                 android:minHeight="48dp" />
 
             <EditText
-                android:id="@+id/etModelo"
+                android:id="@+id/etDestino"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Modelo"
+                android:hint="Destino"
                 android:inputType="text"
                 android:minHeight="48dp" />
 
             <EditText
-                android:id="@+id/etMatricula"
+                android:id="@+id/etData_hora"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Matricula"
+                android:hint="Data e Hora"
                 android:inputType="text"
                 android:minHeight="48dp" />
 
             <EditText
-                android:id="@+id/etCor"
+                android:id="@+id/etPontoEncontro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Cor"
+                android:hint="Ponto de Encontro"
                 android:inputType="text"
                 android:minHeight="48dp" />
 
             <EditText
-                android:id="@+id/etPerfil_id"
+                android:id="@+id/etReembolso"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Perfil_id"
+                android:hint="Reembolso"
+                android:inputType="number"
+                android:minHeight="48dp" />
+
+            <EditText
+                android:id="@+id/etEstado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Estado"
                 android:inputType="number"
                 android:minHeight="48dp" />
 
 
         </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabRemover"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="32dp"
+            android:focusable="true"
+            android:src="@drawable/ic_action_remover"
+            app:backgroundTint="#4CAF50"
+            app:tint="#FFFFFF"
+            tools:ignore="SpeakableTextPresentCheck" />
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

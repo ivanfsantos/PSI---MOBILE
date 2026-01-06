@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:padding="24dp"
+    tools:context=".ReservarFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Finalizar Reserva"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp"
+        android:textColor="#000000"/>
+
+    <EditText
+        android:id="@+id/etPontoEncontro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ponto de Encontro"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:gravity="top|start"
+        android:minHeight="48dp"
+        android:background="@android:drawable/edit_text"
+        android:scrollbars="vertical" />
+
+    <EditText
+        android:id="@+id/etContacto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Contacto"
+        android:inputType="phone"
+        android:background="@android:drawable/edit_text"
+        android:minHeight="48dp" />
+
+    <Button
+        android:id="@+id/btnConfirmar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#4CAF50"
+        android:text="Confirmar Reserva"
+        android:textColor="#FFFFFF" />
+
+</LinearLayout>

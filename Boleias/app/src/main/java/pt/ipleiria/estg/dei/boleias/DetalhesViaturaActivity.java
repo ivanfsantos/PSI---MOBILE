@@ -44,11 +44,6 @@ public class DetalhesViaturaActivity extends AppCompatActivity implements Viatur
     private String perfil_id;
 
 
-
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

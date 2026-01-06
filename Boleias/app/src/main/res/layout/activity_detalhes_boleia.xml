@@ -6,35 +6,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:orientation="vertical"
-    tools:context=".DetalhesViaturaActivity">
+    android:animateLayoutChanges="true"
+    tools:context=".DetalhesBoleiaActivity">
 
     <include layout="@layout/app_bar_main" />
 
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabGuardar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_weight="1"
-        android:clickable="true"
-        app:backgroundTint="#4CAF50"
-        app:srcCompat="@drawable/ic_action_guardar"
-        tools:ignore="SpeakableTextPresentCheck" />
-
     <LinearLayout
+        android:id="@+id/mainContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="343dp"
             android:layout_weight="1"
-            android:orientation="vertical">
-
-        </LinearLayout>
+            android:orientation="vertical" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -97,9 +85,37 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 tools:listitem="@android:layout/simple_spinner_item" />
-
-
         </LinearLayout>
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/contentFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabGuardar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="48dp"
+        android:clickable="true"
+        app:backgroundTint="#4CAF50"
+        app:srcCompat="@drawable/ic_action_guardar"
+        app:tint="#FFFFFF" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabReservar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="88dp"
+        android:layout_marginBottom="48dp"
+        android:clickable="true"
+        app:backgroundTint="#2196F3"
+        app:srcCompat="@drawable/ic_action_reservar"
+        app:tint="#FFFFFF" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

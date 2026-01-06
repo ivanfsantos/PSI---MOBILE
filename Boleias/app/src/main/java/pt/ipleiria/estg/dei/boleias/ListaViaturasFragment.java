@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -53,19 +54,14 @@ public class ListaViaturasFragment extends Fragment implements ViaturasListener 
         View view = inflater.inflate(R.layout.fragment_lista_viaturas, container, false);
 
         lvViaturas = view.findViewById(R.id.lvViaturas);
-        fabLista = view.findViewById(R.id.fabLista);
+        fabLista = view.findViewById(R.id.fabRemover);
 
         setHasOptionsMenu(true);
+        getInfo();
 
         Singleton.getInstance(getContext()).setViaturasListener(this);
+        Singleton.getInstance(getContext()).getAllViaturasPerfilAPI(getContext(), token, perfil_id);
 
-        SharedPreferences sharedPref = getContext().getSharedPreferences("DADOS_USER", Context.MODE_PRIVATE);
-        token = sharedPref.getString("token", null);
-        perfil_id = sharedPref.getString("perfil_id", null);
-
-        if (token != null && perfil_id != null) {
-            Singleton.getInstance(getContext()).getAllViaturasAPI(getContext(), token, perfil_id);
-        }
 
         fabLista.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,10 +90,9 @@ public class ListaViaturasFragment extends Fragment implements ViaturasListener 
         super.onActivityResult(requestCode, resultCode, data);
 
 
-
         if (resultCode == Activity.RESULT_OK){
 
-            Singleton.getInstance(getContext()).getAllViaturasAPI(getContext(), token, perfil_id);
+            Singleton.getInstance(getContext()).getAllViaturasPerfilAPI(getContext(), token, perfil_id);
 
             if (requestCode == MenuMainActivity.EDIT && data != null) {
                 int operacaoRealizada = data.getIntExtra("OPERACAO", MenuMainActivity.EDIT);
@@ -142,6 +137,25 @@ public class ListaViaturasFragment extends Fragment implements ViaturasListener 
             }
         });
 
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+}
+
+    private void getInfo() {
+        SharedPreferences sharedPref = getContext().getSharedPreferences("DADOS_USER", Context.MODE_PRIVATE);
+        token = sharedPref.getString("token", null);
+        perfil_id = sharedPref.getString("perfil_id", null);
     }
 
 

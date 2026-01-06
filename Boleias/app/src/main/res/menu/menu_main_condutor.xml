@@ -15,6 +15,15 @@
             android:id="@+id/navViaturas"
             android:title="@string/navViaturas" />
 
+        <item android:title="">
+            <menu>
+                <item
+                    android:id="@+id/navLogout"
+                    android:icon="@drawable/ic_action_logout"
+                    android:title="Logout" />
+            </menu>
+        </item>
+
     </group>
 
 </menu>

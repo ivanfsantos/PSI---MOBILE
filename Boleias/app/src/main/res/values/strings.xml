@@ -21,6 +21,7 @@
     <string name="boleia_adicionada_com_sucesso">Boleia adicionada com sucesso!</string>
     <string name="boleia_modificada_com_sucesso">Boleia modificada com sucesso!</string>
     <string name="boleia_removida_com_sucesso">Boleia removida com sucesso!</string>
+    <string name="reserva_removida_com_sucesso">Reserva removida com sucesso!</string>
     <string name="pesquisa">Pesquisa</string>
     <string name="txt_detalhes">"Detalhes: "</string>
     <string name="txt_adicionar_viatura">Adicionar Viatura</string>
@@ -38,6 +39,10 @@
     <string name="lugares_disponiveis">lugares_disponiveis\n</string>
     <string name="preco">preco</string>
     <string name="viatura_id">viatura_id\n</string>
+    <string name="contacto">contacto</string>
+    <string name="reembolso">reembolso</string>
+    <string name="estado">estado</string>
+    <string name="encontro">encontro</string>
 
 
 </resources>

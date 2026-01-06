@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -27,10 +28,12 @@ import java.util.ArrayList;
 
 import pt.ipleiria.estg.dei.boleias.adaptadores.ListaBoleiasAdaptador;
 import pt.ipleiria.estg.dei.boleias.listeners.BoleiasListener;
+import pt.ipleiria.estg.dei.boleias.listeners.ViaturasListener;
 import pt.ipleiria.estg.dei.boleias.modelos.Boleia;
 import pt.ipleiria.estg.dei.boleias.modelos.Singleton;
+import pt.ipleiria.estg.dei.boleias.modelos.Viatura;
 
-public class ListaBoleiasFragment extends Fragment implements BoleiasListener {
+public class ListaBoleiasFragment extends Fragment implements BoleiasListener, ViaturasListener {
 
     private ListView lvBoleias;
     private FloatingActionButton fabLista;
@@ -38,11 +41,7 @@ public class ListaBoleiasFragment extends Fragment implements BoleiasListener {
     private SearchView searchView;
     private String token;
     private String condutor;
-
-
-
-
-
+    private String perfil_id;
 
 
 
@@ -50,22 +49,24 @@ public class ListaBoleiasFragment extends Fragment implements BoleiasListener {
     {
     }
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_lista_boleias_condutor, container, false);
+        View view = inflater.inflate(R.layout.fragment_lista_boleias, container, false);
 
         lvBoleias = view.findViewById(R.id.lvBoleias);
 
-        fabLista = view.findViewById(R.id.fabLista);
+        fabLista = view.findViewById(R.id.fabRemover);
 
         setHasOptionsMenu(true);
         getInfo();
+
+
         Singleton.getInstance(getContext()).setBoleiasListener(this);
+        Singleton.getInstance(getContext()).setViaturasListener(this);
         Singleton.getInstance(getContext()).getAllBoleiasAPI(getContext(), token);
+        Singleton.getInstance(getContext()).getAllViaturasAPI(getContext(), token);
 
 
         if("1".equals(condutor)) {
@@ -95,11 +96,20 @@ public class ListaBoleiasFragment extends Fragment implements BoleiasListener {
         return view;
     }
 
-    private void getInfo() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("DADOS_USER", Context.MODE_PRIVATE);
-        token = sharedPreferences.getString("token", null);
-        condutor = sharedPreferences.getString("condutor", null);
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
     }
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -156,11 +166,13 @@ public class ListaBoleiasFragment extends Fragment implements BoleiasListener {
 
     }
 
-    @Override
-    public void onRefreshListaBoleias(ArrayList<Boleia> listaBoleias) {
-        lvBoleias.setAdapter(new ListaBoleiasAdaptador(getContext(), listaBoleias));
-
+    private void getInfo() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("DADOS_USER", Context.MODE_PRIVATE);
+        token = sharedPreferences.getString("token", null);
+        condutor = sharedPreferences.getString("condutor", null);
+        perfil_id = sharedPreferences.getString("perfil_id", null);
     }
+
 
     private void setFabVisibility(boolean isCondutor) {
         if (fabLista != null) {
@@ -172,4 +184,22 @@ public class ListaBoleiasFragment extends Fragment implements BoleiasListener {
         }
     }
 
+
+
+    @Override
+    public void onRefreshListaBoleias(ArrayList<Boleia> listaBoleias) {
+        if (listaBoleias != null) {
+            adaptador = new ListaBoleiasAdaptador(getContext(), listaBoleias);
+            lvBoleias.setAdapter(adaptador);
+        }
+
+    }
+
+
+    @Override
+    public void onRefreshListaViaturas(ArrayList<Viatura> listaViaturas) {
+        if (lvBoleias.getAdapter() != null) {
+            ((ListaBoleiasAdaptador) lvBoleias.getAdapter()).notifyDataSetChanged();
+        }
+    }
 }

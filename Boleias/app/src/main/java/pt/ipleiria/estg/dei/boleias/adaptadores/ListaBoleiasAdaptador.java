@@ -5,12 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import pt.ipleiria.estg.dei.boleias.R;
 import pt.ipleiria.estg.dei.boleias.modelos.Boleia;
+import pt.ipleiria.estg.dei.boleias.modelos.Singleton;
+import pt.ipleiria.estg.dei.boleias.modelos.Viatura;
 
 
 public class ListaBoleiasAdaptador extends BaseAdapter {
@@ -72,7 +75,7 @@ public class ListaBoleiasAdaptador extends BaseAdapter {
     private class ViewHolderLista{
 
 
-        private TextView tvOrigem, tvDestino, tvData_hora, tvLugares_disponiveis, tvPreco, tvViatura_id;
+        private TextView tvOrigem, tvDestino, tvData_hora, tvLugares_disponiveis, tvPreco, tvCarro;
 
         public ViewHolderLista(View view) {
             tvOrigem = view.findViewById(R.id.etOrigem);
@@ -80,17 +83,24 @@ public class ListaBoleiasAdaptador extends BaseAdapter {
             tvData_hora = view.findViewById(R.id.etData_hora);
             tvLugares_disponiveis = view.findViewById(R.id.etLugares_disponiveis);
             tvPreco = view.findViewById(R.id.etPreco);
-            tvViatura_id = view.findViewById(R.id.etViatura_id);
+            tvCarro = view.findViewById(R.id.etCarro);
         }
 
         public void update(Boleia boleia){
+
+            Viatura viatura = Singleton.getInstance(context).getViatura(boleia.getViatura_id());
 
             tvOrigem.setText(boleia.getOrigem());
             tvDestino.setText(boleia.getDestino());
             tvData_hora.setText(boleia.getData_hora());
             tvLugares_disponiveis.setText(boleia.getLugares_disponiveis() + "");
             tvPreco.setText(boleia.getPreco() + "€");
-            tvViatura_id.setText(boleia.getViatura_id() + "");
+            if (viatura != null) {
+                tvCarro.setText(viatura.getMarca() + " " + viatura.getModelo());
+            }else {
+                tvCarro.setText("Viatura pendente...");
+            }
+
         }
     }
 }
