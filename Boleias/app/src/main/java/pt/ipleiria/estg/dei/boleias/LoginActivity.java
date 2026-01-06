@@ -25,6 +25,8 @@ public class LoginActivity extends AppCompatActivity implements LoginListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -105,28 +107,10 @@ public class LoginActivity extends AppCompatActivity implements LoginListener {
             intent.putExtra(MenuMainActivity.CONDUTOR, condutor);
             intent.putExtra(MenuMainActivity.PERFIL_ID, perfil_id);
             startActivity(intent);
+            finish();
         }else{
             Toast.makeText(this, R.string.erro_credenciais, Toast.LENGTH_SHORT).show();
         }
-    }
-
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        EditText etUsername = findViewById(R.id.etUsername);
-        EditText etPassword = findViewById(R.id.etPassword);
-
-        if (etUsername != null) {
-            etUsername.setText("");
-        }
-        if (etPassword != null) {
-            etPassword.setText("");
-        }
-
-        etUsername.clearFocus();
-        etPassword.clearFocus();
     }
 
 }

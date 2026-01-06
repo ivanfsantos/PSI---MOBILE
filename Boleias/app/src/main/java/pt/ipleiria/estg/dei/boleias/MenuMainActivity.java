@@ -1,6 +1,7 @@
 package pt.ipleiria.estg.dei.boleias;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -45,9 +46,11 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_menu_main);
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -68,9 +71,7 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
         carregarCabecalho();
         carregarFragmentoInicial();
 
-
     }
-
 
     private void carregarFragmentoInicial() {
 
@@ -81,6 +82,9 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
         if (lastItem != null) {
             openFragmentById(lastId, lastItem.getTitle().toString());
             navigationView.setCheckedItem(lastId);
+        }else {
+            openFragmentById(R.id.navBoleias, "Boleias");
+            navigationView.setCheckedItem(R.id.navBoleias);
         }
 
     }
@@ -89,55 +93,70 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
 
 
     private void carregarCabecalho() {
-
-
-        nome = getIntent().getStringExtra(NOME);
-        token = getIntent().getStringExtra(TOKEN);
-        condutor = String.valueOf(getIntent().getIntExtra(CONDUTOR, 0));
-        perfil_id = String.valueOf(getIntent().getIntExtra(PERFIL_ID, 0));
-
         sharedPreferences = getSharedPreferences("DADOS_USER", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        if (nome != null || token != null || condutor != null || perfil_id != null) {
-            if (nome != null) editor.putString(NOME, nome);
-            if (token != null) editor.putString(TOKEN, token);
-            if (condutor != null) editor.putString(CONDUTOR, condutor);
-            if (perfil_id != null) editor.putString(PERFIL_ID, perfil_id);
+        String intentToken = getIntent().getStringExtra(TOKEN);
+
+        if (intentToken != null) {
+            nome = getIntent().getStringExtra(NOME);
+            token = intentToken;
+            condutor = String.valueOf(getIntent().getIntExtra(CONDUTOR, 0));
+            perfil_id = String.valueOf(getIntent().getIntExtra(PERFIL_ID, 0));
+
+            editor.putString(NOME, nome);
+            editor.putString(TOKEN, token);
+            editor.putString(CONDUTOR, condutor);
+            editor.putString(PERFIL_ID, perfil_id);
             editor.apply();
+
         } else {
             nome = sharedPreferences.getString(NOME, "Sem nome");
-            condutor = sharedPreferences.getString(CONDUTOR, "0");
             token = sharedPreferences.getString(TOKEN, null);
+            condutor = sharedPreferences.getString(CONDUTOR, "0");
             perfil_id = sharedPreferences.getString(PERFIL_ID, null);
         }
 
         navigationView.getMenu().clear();
-
         if ("1".equals(condutor)) {
             navigationView.inflateMenu(R.menu.menu_main_condutor);
         } else {
             navigationView.inflateMenu(R.menu.menu_main_passageiro);
         }
 
-            View headerView = navigationView.getHeaderView(0);
+        View headerView = navigationView.getHeaderView(0);
+        if (headerView != null) {
             TextView nav_tvNome = headerView.findViewById(R.id.tvNome);
             nav_tvNome.setText(nome);
-
         }
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         int id = item.getItemId();
 
+        if (id == R.id.navLogout) {
+            efetuarLogout();
+        } else {
         editor.putInt("LAST_FRAGMENT", id);
         editor.apply();
-
         openFragmentById(id, item.getTitle().toString());
+    }
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void efetuarLogout() {
+
+        editor.clear();
+        editor.apply();
+
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void openFragmentById(int id, String title) {
@@ -152,7 +171,7 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
             fragment = new ListaViaturasFragment();
         }
         else if (id == R.id.navReservas) {
-            // fragment = new ListaReservasFragment();
+            fragment = new ListaReservasFragment();
         }
         else if (id == R.id.navWishlist) {
             // fragment = new ListaWishlistFragment();
@@ -162,6 +181,7 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
             setTitle(title);
             fragmentManager.beginTransaction()
                     .replace(R.id.contentFragment, fragment)
+                    .addToBackStack(null)
                     .commit();
         }
     }

@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import pt.ipleiria.estg.dei.boleias.modelos.Boleia;
+import pt.ipleiria.estg.dei.boleias.modelos.Reserva;
 import pt.ipleiria.estg.dei.boleias.modelos.User;
 import pt.ipleiria.estg.dei.boleias.modelos.Viatura;
 
@@ -142,6 +143,68 @@ public class JSONParser {
         }
 
         return boleias;
+    }
+
+    public static Reserva parserJsonReserva(String response){
+
+
+        Reserva auxReserva = null;
+        try {
+            JSONObject root = new JSONObject(response);
+
+            if (root.has("data")) {
+                JSONObject reserva = root.getJSONObject("data");
+
+                int id = reserva.getInt("id");
+                String ponto_encontro = reserva.getString("ponto_encontro");
+
+                int contacto = reserva.optInt("contacto", 0);
+                if (contacto == 0 && reserva.has("contacto")) {
+                    contacto = Integer.parseInt(reserva.getString("contacto"));
+                }
+                double reembolso = reserva.optDouble("reembolso", 0.0);
+                String estado = reserva.getString("estado");
+                int perfil_id = reserva.getInt("perfil_id");
+                int boleia_id = reserva.getInt("boleia_id");
+
+                auxReserva = new Reserva(id, ponto_encontro, contacto, reembolso, estado, perfil_id, boleia_id);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        return auxReserva;
+    }
+
+    public static ArrayList<Reserva> parserJsonReservas(JSONArray response){
+
+        ArrayList<Reserva> reservas = new ArrayList<>();
+
+        try{
+            for (int i=0; i< response.length(); i++){
+
+                JSONObject reserva = response.getJSONObject(i);
+
+                int id = reserva.getInt("id");
+                String ponto_encontro = reserva.getString("ponto_encontro");
+                int contacto = reserva.getInt("contacto");
+                double reembolso = reserva.getDouble("reembolso");
+                String estado = reserva.getString("estado");
+                int perfil_id = reserva.getInt("perfil_id");
+                int boleia_id = reserva.getInt("boleia_id");
+
+                Reserva auxReserva = new Reserva(id, ponto_encontro, contacto, reembolso, estado, perfil_id, boleia_id);
+
+                reservas.add(auxReserva);
+            }
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        return reservas;
     }
 
 

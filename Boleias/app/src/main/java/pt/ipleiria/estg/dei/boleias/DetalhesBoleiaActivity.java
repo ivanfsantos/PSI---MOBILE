@@ -1,5 +1,7 @@
 package pt.ipleiria.estg.dei.boleias;
 
+import static android.view.View.GONE;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,13 +15,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -45,16 +50,13 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
     private Spinner spViaturas;
     private ArrayList<Viatura> viaturasDisp;
     Integer idBoleia = -1;
-
-
-
-
+    private FragmentManager fragmentManager;
 
 
     EditText etOrigem, etDestino, etData_hora, etLugares_disponiveis, etPreco;
     private int idViaturaSelecionada = -1;
     private FloatingActionButton fabGuardar;
-    private SharedPreferences sharedPreferences;
+    private FloatingActionButton fabReservar;
     private String token;
     private String perfil_id;
     private String condutor;
@@ -66,8 +68,23 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_detalhes_boleia);
 
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportFragmentManager().popBackStack(); // Remove o fragmento
+                    findViewById(R.id.mainContent).setVisibility(View.VISIBLE);
+                    fabReservar.setVisibility(View.VISIBLE);
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
+        fragmentManager = getSupportFragmentManager();
+
         getInfo();
-        Singleton.getInstance(this).getAllViaturasAPI(this, token, perfil_id);
+        Singleton.getInstance(this).getAllViaturasAPI(this, token);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -78,14 +95,13 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         etPreco = findViewById(R.id.etPreco);
         fabGuardar = findViewById(R.id.fabGuardar);
         spViaturas = findViewById(R.id.spViaturas);
+        fabReservar = findViewById(R.id.fabReservar);
 
         Singleton.getInstance(this).setBoleiaListener(this);
         Singleton.getInstance(this).setViaturasListener(this);
 
-
         etData_hora.setOnClickListener(v -> showMaterialDateTimePicker());
         viaturasDisp = Singleton.getInstance(this).getViaturasBD();
-
 
         spViaturas.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -98,10 +114,86 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
+        fabReservar.setImageResource(R.drawable.ic_action_reservar);
+        idBoleia = getIntent().getIntExtra(BOLEIA_ID, -1);
+    }
 
+    private void detalhesBoleiaFrament(){
 
-            fabGuardar.setImageResource(R.drawable.ic_action_guardar);
-            fabGuardar.setOnClickListener(v -> {
+        if (idBoleia != -1) {
+            boleia = Singleton.getInstance(this).getBoleia(idBoleia);
+            if (boleia != null) {
+                if (condutorIsDono()) {
+                    setInputsEnabled(true);
+                    fabReservar.setVisibility(GONE);
+                    fabGuardar.setImageResource(R.drawable.ic_action_guardar);
+                    setFabGuardar();
+                }else{
+                    setInputsEnabled(false);
+                    fabGuardar.setVisibility(GONE);
+                    fabReservar.setImageResource(R.drawable.ic_action_reservar);
+                    setFabReservar();
+                }
+                setTitle(getString(R.string.txt_detalhes) + " " + boleia.getOrigem() + "->" + boleia.getDestino());
+                etOrigem.setText(boleia.getOrigem());
+                etDestino.setText(boleia.getDestino());
+                etData_hora.setText(boleia.getData_hora());
+                etLugares_disponiveis.setText(String.valueOf(boleia.getLugares_disponiveis()));
+                etPreco.setText(String.valueOf(boleia.getPreco()));
+
+                for (int i = 0; i < viaturasDisp.size(); i++) {
+                    if (viaturasDisp.get(i).getId() == boleia.getViatura_id()) {
+                        spViaturas.setSelection(i);
+                        break;
+                    }
+                }
+            }
+        } else {
+            setTitle(R.string.txt_adicionar_boleia);
+            fabReservar.setVisibility(GONE);
+            fabGuardar.setImageResource(R.drawable.ic_action_add);
+            setFabGuardar();
+        }
+    }
+
+    private boolean condutorIsDono() {
+
+       Viatura viatura = Singleton.getInstance(this).getViatura(boleia.getViatura_id());
+
+        if (viatura == null) {
+            return false;
+        }
+
+        int perfilIdBoleia = viatura.getPerfil_id();
+        return Integer.parseInt(perfil_id) == perfilIdBoleia;
+    }
+
+    private void setFabReservar() {
+        fabReservar.setOnClickListener(v -> {
+            {
+                {
+                    if (boleia != null) {
+                        findViewById(R.id.mainContent).setVisibility(GONE);
+                        fabReservar.setVisibility(GONE);
+
+                        ReservarFragment fragment = new ReservarFragment();
+                        Bundle args = new Bundle();
+                        args.putInt("boleia_id", boleia.getId());
+                        args.putInt("perfil_id", Integer.parseInt(perfil_id));
+                        fragment.setArguments(args);
+
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.contentFragment, fragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                }
+            }
+        });
+    }
+
+    private void setFabGuardar(){
+        fabGuardar.setOnClickListener(v -> {
             if (isBoleiaValida()) {
                 if (idBoleia == -1) {
                     Boleia novaBoleia = new Boleia(0,
@@ -123,40 +215,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
                 }
             }
         });
-
-
-        idBoleia = getIntent().getIntExtra(BOLEIA_ID, -1);
-
-        if (idBoleia != -1) {
-            boleia = Singleton.getInstance(this).getBoleia(idBoleia);
-            if (boleia != null) {
-                setTitle(getString(R.string.txt_detalhes) + " " + boleia.getOrigem());
-                etOrigem.setText(boleia.getOrigem());
-                etDestino.setText(boleia.getDestino());
-                etData_hora.setText(boleia.getData_hora());
-                etLugares_disponiveis.setText(String.valueOf(boleia.getLugares_disponiveis()));
-                etPreco.setText(String.valueOf(boleia.getPreco()));
-
-                for (int i = 0; i < viaturasDisp.size(); i++) {
-                    if (viaturasDisp.get(i).getId() == boleia.getViatura_id()) {
-                        spViaturas.setSelection(i);
-                        break;
-                    }
-                }
-                if ("1".equals(condutor)) {
-                    fabGuardar.setImageResource(R.drawable.ic_action_guardar);
-                } else {
-                    fabGuardar.setImageResource(R.drawable.ic_action_reservar);
-                    setInputsEnabled(false);
-                }
-            }
-        } else {
-            setTitle(R.string.txt_adicionar_boleia);
-            fabGuardar.setImageResource(R.drawable.ic_action_add);
-        }
-
     }
-
     private void showMaterialDateTimePicker() {
         MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Selecione a Data")
@@ -188,7 +247,6 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
             });
         });
     }
-
     private boolean isBoleiaValida() {
         if (etOrigem.getText().toString().isEmpty()) {
             etOrigem.setError("Origem obrigatória");
@@ -233,6 +291,24 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
             return true;
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        try {
+            MenuItem itemRemover = menu.findItem(R.id.itemRemover);
+            if (itemRemover != null) {
+                if (boleia != null && "1".equals(condutor) && condutorIsDono()) {
+                    itemRemover.setVisible(true);
+                } else {
+                    itemRemover.setVisible(false);
+                }
+            }
+        } catch (Exception e) {
+            MenuItem item = menu.findItem(R.id.itemRemover);
+            if (item != null) item.setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -292,6 +368,8 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
     public void onRefreshListaViaturas(ArrayList<Viatura> listaViaturas) {
 
         this.viaturasDisp = listaViaturas;
+        detalhesBoleiaFrament();
+        invalidateOptionsMenu();
 
         if ("1".equals(condutor) && (viaturasDisp == null || viaturasDisp.isEmpty())) {
             Toast.makeText(this, "Crie uma viatura primeiro!", Toast.LENGTH_LONG).show();
@@ -299,7 +377,6 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
             return;
         }
 
-        // Populate Spinner
         ArrayList<String> nomesViaturas = new ArrayList<>();
         for (Viatura v : viaturasDisp) {
             nomesViaturas.add(v.getMarca() + " [" + v.getModelo() + "]");
@@ -310,13 +387,18 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spViaturas.setAdapter(adapter);
 
+
         if (boleia != null) {
             for (int i = 0; i < viaturasDisp.size(); i++) {
                 if (viaturasDisp.get(i).getId() == boleia.getViatura_id()) {
                     spViaturas.setSelection(i);
+                    idViaturaSelecionada = viaturasDisp.get(i).getId();
                     break;
                 }
             }
+        } else if (!viaturasDisp.isEmpty()) {
+            idViaturaSelecionada = viaturasDisp.get(0).getId();
         }
     }
+
 }
