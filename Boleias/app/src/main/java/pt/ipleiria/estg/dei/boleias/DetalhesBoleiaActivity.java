@@ -24,6 +24,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
@@ -57,6 +58,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
     private int idViaturaSelecionada = -1;
     private FloatingActionButton fabGuardar;
     private FloatingActionButton fabReservar;
+    private FloatingActionButton fabVerReservas;
     private String token;
     private String perfil_id;
     private String condutor;
@@ -84,7 +86,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         fragmentManager = getSupportFragmentManager();
 
         getInfo();
-        Singleton.getInstance(this).getAllViaturasAPI(this, token);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -96,12 +98,31 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         fabGuardar = findViewById(R.id.fabGuardar);
         spViaturas = findViewById(R.id.spViaturas);
         fabReservar = findViewById(R.id.fabReservar);
+        fabVerReservas = findViewById(R.id.fabVerReservas);
 
         Singleton.getInstance(this).setBoleiaListener(this);
         Singleton.getInstance(this).setViaturasListener(this);
 
+
+        idBoleia = getIntent().getIntExtra(BOLEIA_ID, -1);
+
+        if (idBoleia == -1) {
+            Singleton.getInstance(this).getAllViaturasPerfilAPI(this, token, perfil_id);
+            viaturasDisp = Singleton.getInstance(this).getViaturasPerfilBD(Integer.parseInt(perfil_id));
+        } else {
+            boleia = Singleton.getInstance(this).getBoleia(idBoleia);
+
+            if(condutorIsDono()){
+                Singleton.getInstance(this).getAllViaturasPerfilAPI(this, token, perfil_id);
+                viaturasDisp = Singleton.getInstance(this).getViaturasPerfilBD(Integer.parseInt(perfil_id));
+            } else {
+                Singleton.getInstance(this).getAllViaturasAPI(this, token);
+                viaturasDisp = Singleton.getInstance(this).getViaturasBD();
+            }
+        }
+
         etData_hora.setOnClickListener(v -> showMaterialDateTimePicker());
-        viaturasDisp = Singleton.getInstance(this).getViaturasBD();
+
 
         spViaturas.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -127,10 +148,13 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
                     setInputsEnabled(true);
                     fabReservar.setVisibility(GONE);
                     fabGuardar.setImageResource(R.drawable.ic_action_guardar);
+                    fabVerReservas.setImageResource(R.drawable.ic_action_ver_reservas);
                     setFabGuardar();
+                    setFabVerReservas();
                 }else{
                     setInputsEnabled(false);
                     fabGuardar.setVisibility(GONE);
+                    fabVerReservas.setVisibility(GONE);
                     fabReservar.setImageResource(R.drawable.ic_action_reservar);
                     setFabReservar();
                 }
@@ -151,12 +175,17 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         } else {
             setTitle(R.string.txt_adicionar_boleia);
             fabReservar.setVisibility(GONE);
+            fabVerReservas.setVisibility(GONE);
             fabGuardar.setImageResource(R.drawable.ic_action_add);
             setFabGuardar();
         }
     }
 
     private boolean condutorIsDono() {
+
+        if (boleia == null) {
+            return false;
+        }
 
        Viatura viatura = Singleton.getInstance(this).getViatura(boleia.getViatura_id());
 
@@ -190,6 +219,30 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
                 }
             }
         });
+    }
+
+
+    private void setFabVerReservas(){
+        fabVerReservas.setOnClickListener(v -> {
+
+            Fragment fragment = new ListaVerReservasFragment();
+
+            Bundle args = new Bundle();
+            args.putInt("BOLEIA_ID", idBoleia);
+
+            fragment.setArguments(args);
+
+            findViewById(R.id.mainContent).setVisibility(View.GONE);
+            fabGuardar.setVisibility(View.GONE);
+            fabReservar.setVisibility(View.GONE);
+            fabVerReservas.setVisibility(View.GONE);
+
+            fragmentManager.beginTransaction()
+                    .replace(R.id.contentFragment, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        });
+
     }
 
     private void setFabGuardar(){
@@ -347,6 +400,8 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
 
     @Override
     public void onRefreshDetalhes(int op) {
+
+
         Intent intent = new Intent();
         intent.putExtra("OPERACAO", op);
         setResult(RESULT_OK, intent);

@@ -10,6 +10,10 @@ public class Boleia {
     private double preco;
     private int viatura_id;
 
+
+
+    private int isFechada;
+
     public Boleia (int id, String origem, String destino, String data_hora, int lugares_disponiveis, double preco, int viatura_id)
     {
         this.id = id;
@@ -76,4 +80,14 @@ public class Boleia {
     public void setViatura_id(int viatura_id) {
         this.viatura_id = viatura_id;
     }
+
+    public int getIsFechada() {
+        return isFechada;
+    }
+
+    public void setIsFechada(int isFechada) {
+        this.isFechada = isFechada;
+    }
+
+
 }

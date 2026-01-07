@@ -44,6 +44,8 @@ public class Singleton {
 
     private ArrayList<Viatura> viaturas;
     private ArrayList<Boleia> boleias;
+    private ArrayList<Boleia> boleiasFechadas;
+
     private ArrayList<Reserva> reservas;
 
 
@@ -55,6 +57,7 @@ public class Singleton {
     private String mUrlApiViatura = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/viatura";
     private String mUrlApiBoleia = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/boleia";
     private String mUrlApiReserva = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/reserva";
+
 
     private LoginListener loginListener;
     private ViaturaListener viaturaListener;
@@ -208,7 +211,6 @@ public class Singleton {
         }
     }
 
-    // singleton viaturas
     public void getAllViaturasPerfilAPI(final Context context, String tokenAPI, String perfil_id) {
         if (!JSONParser.isConnectionInternet(context)) {
             Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
@@ -224,7 +226,7 @@ public class Singleton {
 
                                 JSONArray jsonArray = response.getJSONArray("data");
                                 viaturas = JSONParser.parserJsonViaturas(jsonArray);
-                                adicionarViaturasBD(viaturas);
+                                adicionarViaturasPerfilBD(viaturas);
 
                                 if (viaturasListener != null) {
                                     viaturasListener.onRefreshListaViaturas(viaturas);
@@ -360,6 +362,18 @@ public class Singleton {
         }
     }
 
+    public void adicionarViaturasPerfilBD(ArrayList<Viatura> viaturas) {
+        if (viaturas == null || viaturas.isEmpty()) return;
+
+        int perfilId = viaturas.get(0).getPerfil_id();
+
+        boleiasBD.removerViaturasPerfilBD(perfilId);
+
+        for (Viatura v : viaturas) {
+            boleiasBD.adicionarViaturaBD(v);
+        }
+    }
+
     public void adicionarViaturasBD(ArrayList<Viatura> viaturas) {
         boleiasBD.removerAllViaturasBD();
         for (Viatura v : viaturas) {
@@ -372,6 +386,11 @@ public class Singleton {
         if (v != null){
             boleiasBD.editarViaturaBD(viatura);
         }
+    }
+
+    public ArrayList<Viatura> getViaturasPerfilBD(int perfilId) {
+
+        return boleiasBD.getAllViaturasPerfilBD(perfilId);
     }
 
     public void removerViaturaBD(int idViatura){
@@ -398,6 +417,7 @@ public class Singleton {
         return new ArrayList<>(viaturas);
     }
 
+
     public boolean matriculaExiste(String matricula, int idViatura) {
         for (Viatura v : viaturas) {
             if (v.getMatricula().equalsIgnoreCase(matricula) && v.getId() != idViatura) {
@@ -423,7 +443,22 @@ public class Singleton {
                             try {
 
                                 JSONArray jsonArray = response.getJSONArray("data");
-                                boleias = JSONParser.parserJsonBoleias(jsonArray);
+                                JSONArray jsonArrayFechadas = response.getJSONArray("boleias_fechadas");
+
+
+                                boleias = JSONParser.parserJsonBoleias(jsonArray, 0);
+                                boleiasFechadas = JSONParser.parserJsonBoleias(jsonArrayFechadas, 1);
+
+                                java.util.HashMap<Integer, Boleia> mapaBoleias = new java.util.HashMap<>();
+
+                                for (Boleia b : boleias) mapaBoleias.put(b.getId(), b);
+
+                                for (Boleia f : boleiasFechadas) mapaBoleias.put(f.getId(), f);
+
+                                boleias.clear();
+                                boleias.addAll(mapaBoleias.values());
+
+
                                 adicionarBoleiasBD(boleias);
 
                                 if (boleiasListener != null) {
@@ -660,6 +695,103 @@ public class Singleton {
         }
     }
 
+
+    public void getAllReservasCondutorAPI(final Context context, String tokenAPI, String boleia_id) {
+        if (!JSONParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
+        }
+        else {
+            String url = mUrlApiReserva + "/reservas" + "?access-token=" + tokenAPI + "&boleia_id=" + boleia_id;
+
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+
+                                JSONArray jsonArray = response.getJSONArray("data");
+                                reservas = JSONParser.parserJsonReservas(jsonArray);
+                                adicionarReservasCondutorBD(reservas);
+
+                                if (reservasListener != null) {
+                                    reservasListener.onRefreshListaReservas(reservas);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                Toast.makeText(context, "Error parsing data", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(context, "API Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                    });
+
+            volleyQueue.add(request);
+        }
+    }
+
+
+
+    public void validarReservasAPI(final Context context, final String tokenAPI, final String boleia_id) {
+        if (!JSONParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
+        } else {
+            String url = mUrlApiReserva + "/validar?access-token=" + tokenAPI + "&boleia_id=" + boleia_id;
+
+            StringRequest request = new StringRequest(Request.Method.PUT, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    try {
+                        JSONObject response = new JSONObject(s);
+                        boolean success = response.getBoolean("success");
+
+                        if (success) {
+                            getAllReservasCondutorAPI(context, tokenAPI, boleia_id);
+
+                            if (reservaListener != null) {
+                                reservaListener.onRefreshDetalhes(MenuMainActivity.EDIT);
+                            }
+                            Toast.makeText(context, "Reservas validadas com sucesso", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                        try {
+                            String responseBody = new String(error.networkResponse.data, "UTF-8");
+                            JSONObject jsonObject = new JSONObject(responseBody);
+
+                            if (jsonObject.has("errors")) {
+                                String validationErrors = jsonObject.get("errors").toString();
+                                Log.e("YII_VALIDATION", validationErrors);
+                                Toast.makeText(context, "Validation Fail: " + validationErrors, Toast.LENGTH_LONG).show();
+                            } else {
+                                String message = jsonObject.optString("message", "Unknown Server Error");
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            Log.e("DEBUG", "Error parsing 500 response", e);
+                        }
+                    }
+                }
+            });
+
+            volleyQueue.add(request);
+        }
+    }
+
+
+
+
     public void adicionarReservaAPI(String tokenAPI, final Reserva reserva, final Context context){
         if(!JSONParser.isConnectionInternet(context)) {
             Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
@@ -749,6 +881,8 @@ public class Singleton {
     }
 
 
+
+
     public void adicionarReservaBD(Reserva reserva){
         Reserva auxReserva = boleiasBD.adicionarReservaBD(reserva);
         if (auxReserva != null){
@@ -762,6 +896,19 @@ public class Singleton {
             boleiasBD.adicionarReservaBD(r);
         }
     }
+
+    public void adicionarReservasCondutorBD(ArrayList<Reserva> reservas) {
+        if (reservas == null || reservas.isEmpty()) return;
+
+        int boleia_id = reservas.get(0).getBoleia_id();
+
+        boleiasBD.removerReservasPerfilBD(boleia_id);
+
+        for (Reserva r : reservas) {
+            boleiasBD.adicionarReservaBD(r);
+        }
+    }
+
 
 
     public void removerReservaBD(int idReserva){

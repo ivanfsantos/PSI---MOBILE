@@ -117,7 +117,7 @@ public class JSONParser {
         return auxBoleia;
     }
 
-    public static ArrayList<Boleia> parserJsonBoleias(JSONArray response){
+    public static ArrayList<Boleia> parserJsonBoleias(JSONArray response, int fechada){
 
         ArrayList<Boleia> boleias = new ArrayList<>();
 
@@ -135,6 +135,8 @@ public class JSONParser {
                 int viatura_id = boleia.getInt("viatura_id");
 
                 Boleia auxBoleia = new Boleia(id, origem, destino, data_hora, lugares_disponiveis, preco, viatura_id);
+
+                auxBoleia.setIsFechada(fechada);
 
                 boleias.add(auxBoleia);
             }

@@ -52,6 +52,7 @@ public class ListaBoleiasAdaptador extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup)
     {
         Boleia boleia = boleias.get(i);
+
         if (inflater == null){
             inflater = LayoutInflater.from(context);
 
@@ -65,6 +66,14 @@ public class ListaBoleiasAdaptador extends BaseAdapter {
         if (viewHolder == null){
             viewHolder = new ListaBoleiasAdaptador.ViewHolderLista(view);
             view.setTag(viewHolder);
+        }
+
+        if (boleia.getIsFechada() == 1) {
+            view.setAlpha(0.4f);
+            view.setBackgroundColor(android.graphics.Color.parseColor("#F5F5F5"));
+        } else {
+            view.setAlpha(1.0f);
+            view.setBackgroundColor(android.graphics.Color.TRANSPARENT);
         }
 
         viewHolder.update(boleia);

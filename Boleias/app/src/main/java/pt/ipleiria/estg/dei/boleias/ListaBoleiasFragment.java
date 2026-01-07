@@ -87,9 +87,16 @@ public class ListaBoleiasFragment extends Fragment implements BoleiasListener, V
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent intent = new Intent (getContext(), DetalhesBoleiaActivity.class);
-                intent.putExtra(DetalhesBoleiaActivity.BOLEIA_ID, (int) id);
-                startActivityForResult(intent, MenuMainActivity.EDIT);
+                Boleia boleiaSelecionada = (Boleia) parent.getItemAtPosition(position);
+
+                if (boleiaSelecionada != null && boleiaSelecionada.getIsFechada() == 1) {
+                    Toast.makeText(getContext(), "Esta boleia está fechada e não pode ser acedida.", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    Intent intent = new Intent(getContext(), DetalhesBoleiaActivity.class);
+                    intent.putExtra(DetalhesBoleiaActivity.BOLEIA_ID, (int) id);
+                    startActivityForResult(intent, MenuMainActivity.EDIT);
+                }
             }
         });
 
@@ -115,25 +122,25 @@ public class ListaBoleiasFragment extends Fragment implements BoleiasListener, V
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
-        if (resultCode == Activity.RESULT_OK){
+        if (resultCode == Activity.RESULT_OK) {
 
             Singleton.getInstance(getContext()).getAllBoleiasAPI(getContext(), token);
 
-            if (requestCode == MenuMainActivity.EDIT && data != null) {
-                int operacaoRealizada = data.getIntExtra("OPERACAO", MenuMainActivity.EDIT);
-
-                if (operacaoRealizada == MenuMainActivity.DEL) {
-                    Toast.makeText(getContext(), R.string.boleia_removida_com_sucesso, Toast.LENGTH_SHORT).show();
+            if (requestCode == MenuMainActivity.EDIT) {
+                if (data == null) {
+                    Toast.makeText(getContext(), "Boleia validada e fechada com sucesso!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getContext(), R.string.boleia_modificada_com_sucesso, Toast.LENGTH_SHORT).show();
+                    int operacaoRealizada = data.getIntExtra("OPERACAO", MenuMainActivity.EDIT);
+                    if (operacaoRealizada == MenuMainActivity.DEL) {
+                        Toast.makeText(getContext(), R.string.boleia_removida_com_sucesso, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), R.string.boleia_modificada_com_sucesso, Toast.LENGTH_SHORT).show();
+                    }
                 }
             } else if (requestCode == MenuMainActivity.ADD) {
                 Toast.makeText(getContext(), R.string.boleia_adicionada_com_sucesso, Toast.LENGTH_SHORT).show();
             }
-
         }
-
     }
 
     @Override

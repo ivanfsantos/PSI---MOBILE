@@ -12,21 +12,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
-import pt.ipleiria.estg.dei.boleias.adaptadores.ListaBoleiasAdaptador;
 import pt.ipleiria.estg.dei.boleias.adaptadores.ListaReservasAdaptador;
 import pt.ipleiria.estg.dei.boleias.listeners.BoleiasListener;
 import pt.ipleiria.estg.dei.boleias.listeners.ReservasListener;
@@ -47,7 +42,6 @@ public class ListaReservasFragment extends Fragment implements ReservasListener,
 
 
     public ListaReservasFragment() {
-        // Required empty public constructor
     }
 
 

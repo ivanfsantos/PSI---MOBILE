@@ -133,6 +133,34 @@ public class BDHelper extends SQLiteOpenHelper {
         return viaturas;
     }
 
+    public ArrayList<Viatura> getAllViaturasPerfilBD(int perfilId) {
+        ArrayList<Viatura> viaturas = new ArrayList<>();
+
+        Cursor cursor = this.database.query(TABLE_VIATURAS,
+                new String[]{ID, MARCA, MODELO, MATRICULA, COR, PERFIL_ID},
+                PERFIL_ID + " = ?",
+                new String[]{String.valueOf(perfilId)},
+                null, null, null);
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+                    viaturas.add(new Viatura(
+                            cursor.getInt(0),
+                            cursor.getString(1),
+                            cursor.getString(2),
+                            cursor.getString(3),
+                            cursor.getString(4),
+                            cursor.getInt(5)));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+        }
+        return viaturas;
+    }
+
+
+
     public boolean editarViaturaBD(Viatura viatura){
         ContentValues values = new ContentValues();
 
@@ -154,6 +182,10 @@ public class BDHelper extends SQLiteOpenHelper {
 
     public void removerAllViaturasBD() {
         this.database.delete(TABLE_VIATURAS, null, null);
+    }
+
+    public void removerViaturasPerfilBD(int perfilId) {
+        this.database.delete(TABLE_VIATURAS, PERFIL_ID + " = ?", new String[]{String.valueOf(perfilId)});
     }
 
     //crud boleias
@@ -273,6 +305,12 @@ public class BDHelper extends SQLiteOpenHelper {
 
     public void removerAllReservasBD() {
         this.database.delete(TABLE_RESERVAS, null, null);
+    }
+
+    public void removerReservasPerfilBD(int boleia_id) {
+
+        this.database.delete(TABLE_RESERVAS, BOLEIA_ID + " = ?", new String[]{String.valueOf(boleia_id)});
+
     }
 }
 
