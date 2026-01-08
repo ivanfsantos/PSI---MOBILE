@@ -74,9 +74,9 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
             @Override
             public void handleOnBackPressed() {
                 if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    getSupportFragmentManager().popBackStack(); // Remove o fragmento
+                    getSupportFragmentManager().popBackStack();
                     findViewById(R.id.mainContent).setVisibility(View.VISIBLE);
-                    fabReservar.setVisibility(View.VISIBLE);
+                    detalhesBoleiaFragment();
                 } else {
                     setEnabled(false);
                     getOnBackPressedDispatcher().onBackPressed();
@@ -138,22 +138,26 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         idBoleia = getIntent().getIntExtra(BOLEIA_ID, -1);
     }
 
-    private void detalhesBoleiaFrament(){
-
+    private void detalhesBoleiaFragment() {
         if (idBoleia != -1) {
             boleia = Singleton.getInstance(this).getBoleia(idBoleia);
             if (boleia != null) {
                 if (condutorIsDono()) {
                     setInputsEnabled(true);
-                    fabReservar.setVisibility(GONE);
+                    fabVerReservas.show();
+                    fabGuardar.show();
+                    fabReservar.hide();
+
                     fabGuardar.setImageResource(R.drawable.ic_action_guardar);
                     fabVerReservas.setImageResource(R.drawable.ic_action_ver_reservas);
                     setFabGuardar();
                     setFabVerReservas();
-                }else{
+                } else {
                     setInputsEnabled(false);
-                    fabGuardar.setVisibility(GONE);
-                    fabVerReservas.setVisibility(GONE);
+                    fabReservar.show();
+                    fabGuardar.hide();
+                    fabVerReservas.hide();
+
                     fabReservar.setImageResource(R.drawable.ic_action_reservar);
                     setFabReservar();
                 }
@@ -172,9 +176,9 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
                 }
             }
         } else {
-            setTitle(R.string.txt_adicionar_boleia);
-            fabReservar.setVisibility(GONE);
-            fabVerReservas.setVisibility(GONE);
+            fabGuardar.show();
+            fabReservar.hide();
+            fabVerReservas.hide();
             fabGuardar.setImageResource(R.drawable.ic_action_add);
             setFabGuardar();
         }
@@ -422,7 +426,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
     public void onRefreshListaViaturas(ArrayList<Viatura> listaViaturas) {
 
         this.viaturasDisp = listaViaturas;
-        detalhesBoleiaFrament();
+        detalhesBoleiaFragment();
         invalidateOptionsMenu();
 
         if ("1".equals(condutor) && (viaturasDisp == null || viaturasDisp.isEmpty())) {
