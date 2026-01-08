@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">boleias</string>
+    <string name="erro_ligacao_internet">não há internet</string>
+    <string name="erro_credenciais">erro nas credênciais</string>
+    <string name="dados_invalidos">dados inválidos!</string>
+    <string name="viaturas">viaturas</string>
+    <string name="navBoleias">boleias</string>
+    <string name="navReservas">reservas</string>
+    <string name="navViaturas">viaturas</string>
+    <string name="navWishlist">wishlist</string>
+    <string name="ndOpen">open</string>
+    <string name="ndClose">close</string>
+    <string name="marca">marca\n</string>
+    <string name="modelo">modelo\n\n</string>
+    <string name="matricula">matricula\n</string>
+    <string name="cor">cor\n</string>
+    <string name="perfil_id">perfil_id</string>
+    <string name="viatura_adicionada_com_sucesso">Viatura adicionada com sucesso!</string>
+    <string name="viatura_modificada_com_sucesso">Viatura modificada com sucesso!</string>
+    <string name="viatura_removida_com_sucesso">Viatura removida com sucesso!</string>
+    <string name="boleia_adicionada_com_sucesso">Boleia adicionada com sucesso!</string>
+    <string name="boleia_modificada_com_sucesso">Boleia modificada com sucesso!</string>
+    <string name="boleia_removida_com_sucesso">Boleia removida com sucesso!</string>
+    <string name="reserva_removida_com_sucesso">Reserva removida com sucesso!</string>
+    <string name="pesquisa">Pesquisa</string>
+    <string name="txt_detalhes">"Detalhes: "</string>
+    <string name="txt_adicionar_viatura">Adicionar Viatura</string>
+    <string name="txt_adicionar_boleia">Adicionar Boleia</string>
+    <string name="txt_tem_a_certeza_que_pretende_remover_a_viatura">Tem a certeza que pretende remover a viatura?</string>
+    <string name="txt_tem_a_certeza_que_pretende_remover_a_boleia">Tem a certeza que pretende remover a boleia?</string>
+    <string name="txt_sim">Sim</string>
+    <string name="txt_remover_viatura">Remover Viatura</string>
+    <string name="txt_remover_boleia">Remover Boleia</string>
+    <string name="txt_cancelar">Cancelar</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="origem">origem\n</string>
+    <string name="destino">destino</string>
+    <string name="data_hora">data_hora\n</string>
+    <string name="lugares_disponiveis">lugares_disponiveis\n</string>
+    <string name="preco">preco</string>
+    <string name="viatura_id">viatura_id\n</string>
+    <string name="contacto">contacto</string>
+    <string name="reembolso">reembolso</string>
+    <string name="estado">estado</string>
+    <string name="encontro">encontro</string>
+
+
+</resources>

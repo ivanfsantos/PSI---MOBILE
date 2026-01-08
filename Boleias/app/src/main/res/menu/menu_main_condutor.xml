@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:checkableBehavior ="single">
+        <item
+            android:id="@+id/navBoleias"
+            android:title="@string/navBoleias" />
+        <item
+            android:id="@+id/navReservas"
+            android:title="@string/navReservas" />
+        <item
+            android:id="@+id/navViaturas"
+            android:title="@string/navViaturas" />
+
+        <item android:title="">
+            <menu>
+                <item
+                    android:id="@+id/navLogout"
+                    android:icon="@drawable/ic_action_logout"
+                    android:title="Logout" />
+            </menu>
+        </item>
+
+    </group>
+
+</menu>
