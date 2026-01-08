@@ -123,7 +123,6 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
 
         etData_hora.setOnClickListener(v -> showMaterialDateTimePicker());
 
-
         spViaturas.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
