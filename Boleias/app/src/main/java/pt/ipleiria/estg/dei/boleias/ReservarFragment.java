@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.boleias;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -41,7 +40,7 @@ public class ReservarFragment extends Fragment {
             perfil_id = getArguments().getInt("perfil_id");
         }
 
-        etPontoEncontro = view.findViewById(R.id.etPontoEncontro);
+        etPontoEncontro = view.findViewById(R.id.etDescricao);
         etContacto = view.findViewById(R.id.etContacto);
         btnConfirmar = view.findViewById(R.id.btnConfirmar);
 

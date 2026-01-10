@@ -13,33 +13,23 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Finalizar Reserva"
-        android:textSize="20sp"
-        android:textStyle="bold"
         android:layout_marginBottom="32dp"
-        android:textColor="#000000"/>
+        android:text="Avaliar Condutor"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/etDescricao"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Ponto de Encontro"
-        android:inputType="textMultiLine"
-        android:minLines="3"
+        android:background="@android:drawable/edit_text"
         android:gravity="top|start"
+        android:hint="Comentário"
+        android:inputType="textMultiLine"
         android:minHeight="48dp"
-        android:background="@android:drawable/edit_text"
+        android:minLines="3"
         android:scrollbars="vertical" />
-
-    <EditText
-        android:id="@+id/etContacto"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Contacto"
-        android:inputType="phone"
-        android:background="@android:drawable/edit_text"
-        android:minHeight="48dp" />
 
     <Button
         android:id="@+id/btnConfirmar"
@@ -47,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:backgroundTint="#4CAF50"
-        android:text="Confirmar Reserva"
+        android:text="Publicar "
         android:textColor="#FFFFFF" />
 
 </LinearLayout>

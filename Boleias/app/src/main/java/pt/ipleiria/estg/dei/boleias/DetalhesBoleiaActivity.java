@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -24,8 +23,11 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -38,13 +40,16 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import pt.ipleiria.estg.dei.boleias.adaptadores.AvaliacoesAdaptador;
+import pt.ipleiria.estg.dei.boleias.listeners.AvaliacoesListener;
 import pt.ipleiria.estg.dei.boleias.listeners.BoleiaListener;
 import pt.ipleiria.estg.dei.boleias.listeners.ViaturasListener;
+import pt.ipleiria.estg.dei.boleias.modelos.Avaliacao;
 import pt.ipleiria.estg.dei.boleias.modelos.Boleia;
 import pt.ipleiria.estg.dei.boleias.modelos.Singleton;
 import pt.ipleiria.estg.dei.boleias.modelos.Viatura;
 
-public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaListener, ViaturasListener {
+public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaListener, ViaturasListener, AvaliacoesListener {
 
     public static final String BOLEIA_ID = "boleia_id";
     private Boleia boleia;
@@ -52,6 +57,10 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
     private ArrayList<Viatura> viaturasDisp;
     Integer idBoleia = -1;
     private FragmentManager fragmentManager;
+    private ArrayList<Avaliacao> avaliacoes;
+    private RecyclerView rvAvaliacoes;
+    private AvaliacoesAdaptador avaliacoesAdaptador;
+    private NestedScrollView nestedScrollView;
 
 
     EditText etOrigem, etDestino, etData_hora, etLugares_disponiveis, etPreco;
@@ -68,6 +77,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        
         setContentView(R.layout.activity_detalhes_boleia);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
@@ -75,6 +85,9 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
             public void handleOnBackPressed() {
                 if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                     getSupportFragmentManager().popBackStack();
+                    if (nestedScrollView != null) {
+                        nestedScrollView.setVisibility(View.VISIBLE);
+                    }
                     findViewById(R.id.mainContent).setVisibility(View.VISIBLE);
                     detalhesBoleiaFragment();
                 } else {
@@ -99,8 +112,13 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         spViaturas = findViewById(R.id.spViaturas);
         fabReservar = findViewById(R.id.fabReservar);
         fabVerReservas = findViewById(R.id.fabVerReservas);
+        rvAvaliacoes = findViewById(R.id.rvAvaliacoes);
+        nestedScrollView = findViewById(R.id.nestedScrollView);
+
+        rvAvaliacoes.setLayoutManager(new LinearLayoutManager(this));
 
         Singleton.getInstance(this).setBoleiaListener(this);
+        Singleton.getInstance(this).setAvaliacoesListener(this);
         Singleton.getInstance(this).setViaturasListener(this);
 
 
@@ -111,7 +129,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
             viaturasDisp = Singleton.getInstance(this).getViaturasPerfilBD(Integer.parseInt(perfil_id));
         } else {
             boleia = Singleton.getInstance(this).getBoleia(idBoleia);
-
+            avaliacoes = Singleton.getInstance(this).getAvaliacoesBD();
             if(condutorIsDono()){
                 Singleton.getInstance(this).getAllViaturasPerfilAPI(this, token, perfil_id);
                 viaturasDisp = Singleton.getInstance(this).getViaturasPerfilBD(Integer.parseInt(perfil_id));
@@ -142,16 +160,24 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         if (idBoleia != -1) {
             boleia = Singleton.getInstance(this).getBoleia(idBoleia);
             if (boleia != null) {
+
+                Viatura viaturaDono = Singleton.getInstance(this).getViatura(boleia.getViatura_id());
+
+                if (viaturaDono != null) {
+                    String perfil_idCondutor = String.valueOf(viaturaDono.getPerfil_id());
+                    Singleton.getInstance(this).getAllAvaliacoesAPI(this, token, perfil_idCondutor);
+                }
+
                 if (condutorIsDono()) {
                     setInputsEnabled(true);
                     fabVerReservas.show();
                     fabGuardar.show();
                     fabReservar.hide();
-
                     fabGuardar.setImageResource(R.drawable.ic_action_guardar);
                     fabVerReservas.setImageResource(R.drawable.ic_action_ver_reservas);
                     setFabGuardar();
                     setFabVerReservas();
+
                 } else {
                     setInputsEnabled(false);
                     fabReservar.show();
@@ -205,6 +231,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
             {
                 {
                     if (boleia != null) {
+                        nestedScrollView.setVisibility(GONE);
                         findViewById(R.id.mainContent).setVisibility(GONE);
                         fabReservar.setVisibility(GONE);
 
@@ -459,4 +486,21 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         }
     }
 
+    @Override
+    public void onRefreshListaAvaliacoes(ArrayList<Avaliacao> listaAvaliacoes) {
+        if (listaAvaliacoes != null && !listaAvaliacoes.isEmpty()) {
+            this.avaliacoes = listaAvaliacoes;
+
+            if (avaliacoesAdaptador == null) {
+                avaliacoesAdaptador = new AvaliacoesAdaptador(this, avaliacoes);
+                rvAvaliacoes.setAdapter(avaliacoesAdaptador);
+            } else {
+                avaliacoesAdaptador.updateAvaliacoes(avaliacoes);
+            }
+
+            rvAvaliacoes.setVisibility(View.VISIBLE);
+        } else {
+            rvAvaliacoes.setVisibility(View.GONE);
+        }
+    }
 }

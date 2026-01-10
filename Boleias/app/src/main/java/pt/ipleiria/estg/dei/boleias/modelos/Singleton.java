@@ -12,7 +12,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
+
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -27,8 +27,12 @@ import java.util.Map;
 
 import pt.ipleiria.estg.dei.boleias.MenuMainActivity;
 import pt.ipleiria.estg.dei.boleias.R;
+import pt.ipleiria.estg.dei.boleias.listeners.AvaliacaoListener;
+import pt.ipleiria.estg.dei.boleias.listeners.AvaliacoesListener;
 import pt.ipleiria.estg.dei.boleias.listeners.BoleiaListener;
 import pt.ipleiria.estg.dei.boleias.listeners.BoleiasListener;
+import pt.ipleiria.estg.dei.boleias.listeners.DestinoFavoritoListener;
+import pt.ipleiria.estg.dei.boleias.listeners.DestinosFavoritosListener;
 import pt.ipleiria.estg.dei.boleias.listeners.LoginListener;
 import pt.ipleiria.estg.dei.boleias.listeners.ReservaListener;
 import pt.ipleiria.estg.dei.boleias.listeners.ReservasListener;
@@ -45,8 +49,9 @@ public class Singleton {
     private ArrayList<Viatura> viaturas;
     private ArrayList<Boleia> boleias;
     private ArrayList<Boleia> boleiasFechadas;
-
     private ArrayList<Reserva> reservas;
+    private ArrayList<Avaliacao> avaliacoes;
+    private ArrayList<DestinoFavorito> destinosFavoritos;
 
 
 
@@ -57,6 +62,8 @@ public class Singleton {
     private String mUrlApiViatura = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/viatura";
     private String mUrlApiBoleia = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/boleia";
     private String mUrlApiReserva = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/reserva";
+    private String mUrlApiAvaliacao = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/avaliacao";
+    private String mUrlApiDestinoFavorito = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/destino-favorito";
 
 
     private LoginListener loginListener;
@@ -66,6 +73,10 @@ public class Singleton {
     private BoleiasListener boleiasListener;
     private ReservaListener reservaListener;
     private ReservasListener reservasListener;
+    private AvaliacaoListener avaliacaoListener;
+    private AvaliacoesListener avaliacoesListener;
+    private DestinoFavoritoListener destinoFavoritoListener;
+    private DestinosFavoritosListener destinosFavoritosListener;
 
 
     public Singleton(Context context)
@@ -74,6 +85,8 @@ public class Singleton {
         viaturas = new ArrayList<>();
         boleias = new ArrayList<>();
         reservas = new ArrayList<>();
+        avaliacoes = new ArrayList<>();
+        destinosFavoritos = new ArrayList<>();
     }
 
 
@@ -114,6 +127,22 @@ public class Singleton {
 
     public void setReservaListener(ReservaListener reservaListener) {
         this.reservaListener = reservaListener;
+    }
+
+    public void setAvaliacoesListener(AvaliacoesListener avaliacoesListener) {
+        this.avaliacoesListener = avaliacoesListener;
+    }
+
+    public void setAvaliacaoListener(AvaliacaoListener avaliacaoListener) {
+        this.avaliacaoListener = avaliacaoListener;
+    }
+
+    public void setDestinosFavoritosListener(DestinosFavoritosListener destinosFavoritosListener) {
+        this.destinosFavoritosListener = destinosFavoritosListener;
+    }
+
+    public void setDestinoFavoritoListener(DestinoFavoritoListener destinoFavoritoListener) {
+        this.destinoFavoritoListener = destinoFavoritoListener;
     }
 
     // login
@@ -933,6 +962,264 @@ public class Singleton {
     public ArrayList<Reserva> getReservasBD() {
         reservas = boleiasBD.getAllReservasBD();
         return new ArrayList<>(reservas);
+    }
+
+    public void getAllAvaliacoesAPI(final Context context, String tokenAPI, String perfil_id) {
+        if (!JSONParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
+        }
+        else {
+            String url = mUrlApiAvaliacao + "?access-token=" + tokenAPI + "&perfil_id=" + perfil_id;
+
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+
+                                JSONArray jsonArray = response.getJSONArray("data");
+                                avaliacoes = JSONParser.parserJsonAvaliacoes(jsonArray);
+                                adicionarAvaliacoesBD(avaliacoes);
+
+                                if (avaliacoesListener != null) {
+                                    avaliacoesListener.onRefreshListaAvaliacoes(avaliacoes);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                Toast.makeText(context, "Error parsing data", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                        }
+
+                    });
+
+            volleyQueue.add(request);
+        }
+    }
+
+    public void adicionarAvaliacaoAPI(String tokenAPI, final Avaliacao avaliacao, final Context context){
+        if(!JSONParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
+        } else{
+            String token = "?access-token=" + tokenAPI;
+            StringRequest request = new StringRequest(Request.Method.POST, mUrlApiAvaliacao + token, new Response.Listener<String>() {
+
+                @Override
+                public void onResponse(String s) {
+                    Avaliacao avaliacao = JSONParser.parserJsonAvaliacao(s);
+                    adicionarAvaliacaoBD(avaliacao);
+                    if (avaliacaoListener != null){
+                        avaliacaoListener.onRefreshDetalhes(MenuMainActivity.ADD);
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Toast.makeText(context, volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }){
+                @Nullable
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+
+                    Map<String, String> params = new HashMap<>();
+
+                    params.put("descricao", avaliacao.getDescricao());
+                    params.put("perfil_id", avaliacao.getPerfil_id() + "");
+
+                    return params;
+                }
+            };
+            volleyQueue.add(request);
+        }
+    }
+
+
+    public void adicionarAvaliacaoBD(Avaliacao avaliacao){
+        Avaliacao auxAvaliacao = boleiasBD.adicionarAvaliacaoBD(avaliacao);
+        if (auxAvaliacao != null){
+            avaliacoes.add(auxAvaliacao);
+        }
+    }
+
+
+    public void adicionarAvaliacoesBD(ArrayList<Avaliacao> avaliacoes) {
+        boleiasBD.removerAllAvaliacoesBD();
+        for (Avaliacao a : avaliacoes) {
+            boleiasBD.adicionarAvaliacaoBD(a);
+        }
+    }
+
+
+    public ArrayList<Avaliacao> getAvaliacoesBD() {
+        avaliacoes = boleiasBD.getAllAvaliacoesBD();
+        return new ArrayList<>(avaliacoes);
+    }
+
+
+
+
+    public void getAllDestinosFavoritosAPI(final Context context, String tokenAPI, String perfil_id) {
+        if (!JSONParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
+        }
+        else {
+            String url = mUrlApiDestinoFavorito + "?access-token=" + tokenAPI + "&perfil_id=" + perfil_id;
+
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+
+                                JSONArray jsonArray = response.getJSONArray("data");
+                                destinosFavoritos = JSONParser.parserJsonDestinosFavoritos(jsonArray);
+                                adicionarDestinosFavoritosBD(destinosFavoritos);
+
+                                if (destinosFavoritosListener != null) {
+                                    destinosFavoritosListener.onRefreshListaDestinosFavoritos(destinosFavoritos);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                Toast.makeText(context, "Error parsing data", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(context, "API Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                    });
+
+            volleyQueue.add(request);
+        }
+    }
+
+    public void adicionarDestinoFavoritoAPI(String tokenAPI, final DestinoFavorito destinoFavorito, final Context context){
+        if(!JSONParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
+        } else {
+
+            String token = "?access-token=" + tokenAPI;
+            StringRequest request = new StringRequest(Request.Method.POST, mUrlApiDestinoFavorito + token, new Response.Listener<String>() {
+
+                @Override
+                public void onResponse(String s) {
+                    DestinoFavorito destinoFavorito = JSONParser.parserJsonDestinoFavorito(s);
+                    adicionarDestinoFavoritoBD(destinoFavorito);
+                    if (destinoFavoritoListener != null){
+                        destinoFavoritoListener.onRefreshDetalhes(MenuMainActivity.ADD);
+                    }
+                    Toast.makeText(context, "Boleia guardada na watchlist", Toast.LENGTH_SHORT).show();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+
+                    if (volleyError.networkResponse != null && volleyError.networkResponse.data != null) {
+                        try {
+                            String responseBody = new String(volleyError.networkResponse.data, "UTF-8");
+                            JSONObject jsonObject = new JSONObject(responseBody);
+
+                            if (jsonObject.has("errors")) {
+                                String validationErrors = jsonObject.get("errors").toString();
+                                Log.e("YII_VALIDATION", validationErrors);
+                                Toast.makeText(context, "Validation Fail: " + validationErrors, Toast.LENGTH_LONG).show();
+                            } else {
+                                String message = jsonObject.optString("message", "Unknown Server Error");
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            Log.e("DEBUG", "Error parsing 500 response", e);
+                        }
+                    }
+
+                }
+            }){
+                @Nullable
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+
+                    Map<String, String> params = new HashMap<>();
+
+                    params.put("boleia_id", destinoFavorito.getBoleia_id()+"");
+                    params.put("perfil_id", destinoFavorito.getPerfil_id()+"");
+
+
+                    return params;
+                }
+            };
+            volleyQueue.add(request);
+        }
+    }
+
+
+
+    public void removerDestinoFavoritoAPI(String tokenAPI, final DestinoFavorito destinoFavorito, final Context context){
+        if(!JSONParser.isConnectionInternet(context)) {
+            Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
+        } else {
+
+            String token = "?access-token=" + tokenAPI;
+            StringRequest request = new StringRequest(Request.Method.DELETE, mUrlApiDestinoFavorito + "/" + destinoFavorito.getId() + token, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    removerDestinoFavoritoBD(destinoFavorito.getId());
+                    if (destinoFavoritoListener != null){
+                        destinoFavoritoListener.onRefreshDetalhes(MenuMainActivity.DEL);
+                    }
+                    Toast.makeText(context, "Boleia removida da watchlist com sucesso", Toast.LENGTH_SHORT).show();
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    Toast.makeText(context, volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            volleyQueue.add(request);
+        }
+    }
+
+    public void removerDestinoFavoritoBD(int idReserva){
+        Reserva r = getReserva(idReserva);
+        if (r != null) {
+            if (boleiasBD.removerReservaBD(r.getId())) {
+                reservas.remove(r);
+            }
+        }
+    }
+
+    public DestinoFavorito getDestinoFavorito(int idDestinoFavorito) {
+
+        for (DestinoFavorito destinoFavorito: destinosFavoritos) {
+            if (destinoFavorito.getId()==idDestinoFavorito){
+                return destinoFavorito;
+            }
+        }
+        return null;
+    }
+
+    public void adicionarDestinoFavoritoBD(DestinoFavorito destinoFavorito){
+        DestinoFavorito auxDestinoFavorito = boleiasBD.adicionarDestinoFavoritoBD(destinoFavorito);
+        if (auxDestinoFavorito != null){
+            destinosFavoritos.add(auxDestinoFavorito);
+        }
+    }
+
+
+    public void adicionarDestinosFavoritosBD(ArrayList<DestinoFavorito> destinosFavoritos) {
+        boleiasBD.removerAllDestinosFavoritosBD();
+        for (DestinoFavorito d : destinosFavoritos) {
+            boleiasBD.adicionarDestinoFavoritoBD(d);
+        }
     }
 
 
