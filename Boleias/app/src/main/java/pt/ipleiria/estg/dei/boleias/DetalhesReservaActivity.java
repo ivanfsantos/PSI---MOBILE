@@ -9,11 +9,9 @@ import android.view.View;
 import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -41,6 +39,7 @@ public class DetalhesReservaActivity extends AppCompatActivity implements Reserv
 
     EditText etOrigem, etDestino, etData_hora, etPontoEncontro, etReembolso, etEstado;
     private FloatingActionButton fabRemover;
+    private FloatingActionButton fabAvaliarCondutor;
     private String token;
     private String perfil_id;
 
@@ -50,6 +49,24 @@ public class DetalhesReservaActivity extends AppCompatActivity implements Reserv
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_detalhes_reserva);
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportFragmentManager().popBackStack();
+
+                    findViewById(R.id.mainContent).setVisibility(View.VISIBLE);
+
+                    fabAvaliarCondutor.show();
+                    fabRemover.show();
+
+                    findViewById(R.id.contentFragment).setVisibility(View.GONE);
+                } else {
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
 
         fragmentManager = getSupportFragmentManager();
 
@@ -64,16 +81,19 @@ public class DetalhesReservaActivity extends AppCompatActivity implements Reserv
         etOrigem = findViewById(R.id.etOrigem);
         etDestino = findViewById(R.id.etDestino);
         etData_hora = findViewById(R.id.etData_hora);
-        etPontoEncontro = findViewById(R.id.etPontoEncontro);
+        etPontoEncontro = findViewById(R.id.etDescricao);
         etReembolso = findViewById(R.id.etReembolso);
         etEstado = findViewById(R.id.etEstado);
         fabRemover = findViewById(R.id.fabRemover);
+        fabAvaliarCondutor = findViewById(R.id.fabAvaliarCondutor);
 
         Singleton.getInstance(this).setReservaListener(this);
         Singleton.getInstance(this).setBoleiasListener(this);
         Singleton.getInstance(this).setViaturasListener(this);
 
         fabRemover.setImageResource(R.drawable.ic_action_remover);
+        fabAvaliarCondutor.setImageResource(R.drawable.ic_action_avaliar_condutor);
+
         idReserva = getIntent().getIntExtra(RESERVA_ID, -1);
 
         if (idReserva != -1) {
@@ -98,7 +118,40 @@ public class DetalhesReservaActivity extends AppCompatActivity implements Reserv
                 Singleton.getInstance(getApplicationContext()).removerReservaAPI(token, reserva, getApplicationContext());
             }
         });
+
+        fabAvaliarCondutor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                {
+                    {
+                        if (reserva != null) {
+                            findViewById(R.id.mainContent).setVisibility(View.GONE);
+                            fabAvaliarCondutor.hide();
+                            fabRemover.hide();
+
+                            View fragmentContainer = findViewById(R.id.contentFragment);
+                            fragmentContainer.setVisibility(View.VISIBLE);
+
+                            AvaliarFragment fragment = new AvaliarFragment();
+                            Bundle args = new Bundle();
+                            args.putInt("boleia_id", boleia.getId());
+                            fragment.setArguments(args);
+
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.contentFragment, fragment)
+                                    .addToBackStack(null)
+                                    .commit();
+                        }
+                    }
+                }
+            }
+        });
+
+
     }
+
+
 
     private void getInfo() {
 

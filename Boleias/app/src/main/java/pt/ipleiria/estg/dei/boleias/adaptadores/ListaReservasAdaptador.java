@@ -78,7 +78,7 @@ public class ListaReservasAdaptador extends BaseAdapter {
             tvOrigem = view.findViewById(R.id.etOrigem);
             tvDestino = view.findViewById(R.id.etDestino);
             tvData_hora = view.findViewById(R.id.etData_hora);
-            tvPonto_encontro = view.findViewById(R.id.etPontoEncontro);
+            tvPonto_encontro = view.findViewById(R.id.etDescricao);
             tvReembolso = view.findViewById(R.id.etReembolso);
             TvEstado = view.findViewById(R.id.etEstado);
         }

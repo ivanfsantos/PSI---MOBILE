@@ -11,13 +11,15 @@ import java.util.ArrayList;
 public class BDHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "boleiasBD";
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 5;
     private final SQLiteDatabase database;
 
     //tabelas
     private static final String TABLE_VIATURAS = "viaturas";
     private static final String TABLE_BOLEIAS = "boleias";
     private static final String TABLE_RESERVAS = "reservas";
+    private static final String TABLE_AVALIACOES = "avaliacoes";
+    private static final String TABLE_DESTINOS_FAVORITOS = "destinos_favoritos";
 
     //campos
     public static final String ID = "id";
@@ -37,6 +39,7 @@ public class BDHelper extends SQLiteOpenHelper {
     public static final String REEMBOLSO = "reembolso";
     public static final String ESTADO = "estado";
     public static final String BOLEIA_ID = "boleia_id";
+    public static final String DESCRICAO = "descricao";
 
 
 
@@ -84,6 +87,20 @@ public class BDHelper extends SQLiteOpenHelper {
 
                 ");";
         db.execSQL(createReservasTable);
+
+        String createAvaliacoesTable = "CREATE TABLE " + TABLE_AVALIACOES +
+                "( " + ID + " INTEGER PRIMARY KEY, " +
+                DESCRICAO + " TEXT NOT NULL, " +
+                PERFIL_ID + " INTEGER NOT NULL" +
+                ");";
+        db.execSQL(createAvaliacoesTable);
+
+        String createDestinosFavoritosTable = "CREATE TABLE " + TABLE_DESTINOS_FAVORITOS +
+                "( " + ID + " INTEGER PRIMARY KEY, " +
+                BOLEIA_ID + " INTEGER NOT NULL, " +
+                PERFIL_ID + " INTEGER NOT NULL" +
+                ");";
+        db.execSQL(createDestinosFavoritosTable);
     }
 
     @Override
@@ -91,6 +108,8 @@ public class BDHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_VIATURAS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BOLEIAS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_RESERVAS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_AVALIACOES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DESTINOS_FAVORITOS);
 
         this.onCreate(db);
     }
@@ -312,6 +331,100 @@ public class BDHelper extends SQLiteOpenHelper {
         this.database.delete(TABLE_RESERVAS, BOLEIA_ID + " = ?", new String[]{String.valueOf(boleia_id)});
 
     }
+
+    // crud avaliacoes
+    public Avaliacao adicionarAvaliacaoBD(Avaliacao avaliacao){
+        ContentValues values = new ContentValues();
+
+        values.put(ID, avaliacao.getId());
+        values.put(DESCRICAO,avaliacao.getDescricao());
+        values.put(PERFIL_ID, avaliacao.getPerfil_id());
+
+        long id = this.database.insert(TABLE_AVALIACOES, null, values);
+        if (id > -1){
+            return avaliacao;
+        }
+        return null;
+    }
+
+
+    public ArrayList<Avaliacao> getAllAvaliacoesBD(){
+        ArrayList<Avaliacao> avaliacoes = new ArrayList<>();
+        Cursor cursor = this.database.query(TABLE_AVALIACOES, new String[]{ ID, DESCRICAO, PERFIL_ID}, null, null, null, null, null, null);
+        if(cursor.moveToFirst()){
+            do{
+                avaliacoes.add(new Avaliacao(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getInt(2)));
+            }while(cursor.moveToNext());
+            cursor.close();
+        }
+        return avaliacoes;
+    }
+
+
+
+    public void removerAllAvaliacoesBD() {
+        this.database.delete(TABLE_AVALIACOES, null, null);
+    }
+
+
+
+    // crud destinos favoritos
+    public DestinoFavorito adicionarDestinoFavoritoBD(DestinoFavorito destinoFavorito){
+        ContentValues values = new ContentValues();
+
+        values.put(ID, destinoFavorito.getId());
+        values.put(BOLEIA_ID,destinoFavorito.getBoleia_id());
+        values.put(PERFIL_ID, destinoFavorito.getPerfil_id());
+
+        long id = this.database.insert(TABLE_DESTINOS_FAVORITOS, null, values);
+        if (id > -1){
+            return destinoFavorito;
+        }
+        return null;
+    }
+
+
+    public ArrayList<DestinoFavorito> getAllDestinosFavoritosBD(){
+        ArrayList<DestinoFavorito> destinosFavoritos = new ArrayList<>();
+        Cursor cursor = this.database.query(TABLE_DESTINOS_FAVORITOS, new String[]{ ID, BOLEIA_ID, PERFIL_ID}, null, null, null, null, null, null);
+        if(cursor.moveToFirst()){
+            do{
+                destinosFavoritos.add(new DestinoFavorito(
+                        cursor.getInt(0),
+                        cursor.getInt(1),
+                        cursor.getInt(2)
+                        ));
+            }while(cursor.moveToNext());
+            cursor.close();
+        }
+        return destinosFavoritos;
+    }
+
+
+    public boolean editarDestinoFavoritoBD(DestinoFavorito destinoFavorito){
+        ContentValues values = new ContentValues();
+
+        values.put(BOLEIA_ID,destinoFavorito.getBoleia_id());;
+        values.put(PERFIL_ID, destinoFavorito.getPerfil_id());
+
+        return this.database.update(TABLE_DESTINOS_FAVORITOS, values,
+                "id = ?", new String[]{"" + destinoFavorito.getId()}) > 0;
+    }
+
+    public boolean removerDestinoFavoritoBD(long id){
+        int affectedRows =  this.database.delete(TABLE_DESTINOS_FAVORITOS, "id = ?",
+                new String[]{"" + id});
+
+        return affectedRows > 0;
+    }
+
+    public void removerAllDestinosFavoritosBD() {
+        this.database.delete(TABLE_DESTINOS_FAVORITOS, null, null);
+    }
+
 }
 
 

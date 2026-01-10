@@ -11,82 +11,118 @@
 
     <include layout="@layout/app_bar_main" />
 
-    <LinearLayout
-        android:id="@+id/mainContent"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
+            android:id="@+id/mainContent"
             android:layout_width="match_parent"
-            android:layout_height="343dp"
-            android:layout_weight="1"
-            android:orientation="vertical" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:backgroundTint="#8BC34A"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/etOrigem"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Origem"
-                android:inputType="text"
-                android:minHeight="48dp" />
+                android:minHeight="100dp"
+                android:orientation="vertical" />
 
-            <EditText
-                android:id="@+id/etDestino"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Destino"
-                android:inputType="text"
-                android:minHeight="48dp" />
+                android:backgroundTint="#8BC34A"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <EditText
-                android:id="@+id/etData_hora"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Data e Hora"
-                android:focusable="false"
-                android:clickable="true"
-                android:inputType="none"
-                android:minHeight="48dp" />
+                <EditText
+                    android:id="@+id/etOrigem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Origem"
+                    android:inputType="text"
+                    android:minHeight="48dp" />
 
-            <EditText
-                android:id="@+id/etLugares_disponiveis"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Lugares Disponíveis"
-                android:inputType="text"
-                android:minHeight="48dp" />
+                <EditText
+                    android:id="@+id/etDestino"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Destino"
+                    android:inputType="text"
+                    android:minHeight="48dp" />
 
-            <EditText
-                android:id="@+id/etPreco"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="Preco"
-                android:inputType="number"
-                android:minHeight="48dp" />
+                <EditText
+                    android:id="@+id/etData_hora"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Data e Hora"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none"
+                    android:minHeight="48dp" />
 
-            <Spinner
-                android:id="@+id/spViaturas"
+                <EditText
+                    android:id="@+id/etLugares_disponiveis"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Lugares Disponíveis"
+                    android:inputType="text"
+                    android:minHeight="48dp" />
+
+                <EditText
+                    android:id="@+id/etPreco"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Preco"
+                    android:inputType="number"
+                    android:minHeight="48dp" />
+
+                <Spinner
+                    android:id="@+id/spViaturas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    tools:listitem="@android:layout/simple_spinner_item" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="48dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                tools:listitem="@android:layout/simple_spinner_item" />
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="#F5F5F5">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Avaliações e Comentários"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:layout_marginBottom="12dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvAvaliacoes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@android:layout/simple_list_item_2" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp" />
+
+            </LinearLayout>
+
         </LinearLayout>
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <FrameLayout
         android:id="@+id/contentFragment"
@@ -101,7 +137,6 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="48dp"
-        android:clickable="true"
         app:backgroundTint="#4CAF50"
         app:srcCompat="@drawable/ic_action_guardar"
         app:tint="#FFFFFF" />
@@ -113,7 +148,6 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="88dp"
         android:layout_marginBottom="48dp"
-        android:clickable="true"
         app:backgroundTint="#2196F3"
         app:srcCompat="@drawable/ic_action_reservar"
         app:tint="#FFFFFF" />
@@ -125,7 +159,6 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="160dp"
         android:layout_marginBottom="48dp"
-        android:clickable="true"
         app:backgroundTint="#FFEB3B"
         app:srcCompat="@drawable/ic_action_ver_reservas"
         app:tint="#FFFFFF" />

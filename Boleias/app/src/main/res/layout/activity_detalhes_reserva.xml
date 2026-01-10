@@ -13,6 +13,7 @@
 
 
     <LinearLayout
+        android:id="@+id/mainContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -61,7 +62,7 @@
                 android:minHeight="48dp" />
 
             <EditText
-                android:id="@+id/etPontoEncontro"
+                android:id="@+id/etDescricao"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -90,6 +91,12 @@
 
         </LinearLayout>
 
+        <FrameLayout
+            android:id="@+id/contentFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabRemover"
             android:layout_width="wrap_content"
@@ -103,5 +110,16 @@
             app:tint="#FFFFFF"
             tools:ignore="SpeakableTextPresentCheck" />
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAvaliarCondutor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="160dp"
+        android:layout_marginBottom="32dp"
+        app:backgroundTint="#FF5722"
+        app:srcCompat="@drawable/ic_action_avaliar_condutor"
+        app:tint="#FFFFFF" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

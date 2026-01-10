@@ -10,7 +10,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import pt.ipleiria.estg.dei.boleias.modelos.Avaliacao;
 import pt.ipleiria.estg.dei.boleias.modelos.Boleia;
+import pt.ipleiria.estg.dei.boleias.modelos.DestinoFavorito;
 import pt.ipleiria.estg.dei.boleias.modelos.Reserva;
 import pt.ipleiria.estg.dei.boleias.modelos.User;
 import pt.ipleiria.estg.dei.boleias.modelos.Viatura;
@@ -207,6 +209,92 @@ public class JSONParser {
         }
 
         return reservas;
+    }
+
+    public static Avaliacao parserJsonAvaliacao(String response){
+
+
+        Avaliacao auxAvaliacao = null;
+        try{
+            JSONObject avaliacao = new JSONObject(response);
+
+            int id = avaliacao.getInt("id");
+            String descricao = avaliacao.getString("descricao");
+            int perfil_id = avaliacao.getInt("perfil_id");
+
+
+            auxAvaliacao = new Avaliacao(id, descricao, perfil_id);
+
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return auxAvaliacao;
+    }
+
+    public static ArrayList<Avaliacao> parserJsonAvaliacoes(JSONArray response){
+        ArrayList<Avaliacao> avaliacoes = new ArrayList<>();
+        try{
+            for (int i=0; i< response.length(); i++){
+
+                JSONObject avaliacao = response.getJSONObject(i);
+
+                int id = avaliacao.getInt("id");
+                String descricao = avaliacao.getString("descricao");
+                int perfil_id = avaliacao.getInt("perfil_id");
+
+                Avaliacao auxAvaliacao = new Avaliacao(id, descricao, perfil_id);
+
+                avaliacoes.add(auxAvaliacao);
+            }
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        return avaliacoes;
+    }
+
+    public static DestinoFavorito parserJsonDestinoFavorito(String response){
+
+
+        DestinoFavorito auxDestinoFavorito = null;
+        try{
+            JSONObject destinoFavorito = new JSONObject(response);
+
+            int id = destinoFavorito.getInt("id");
+            int boleia_id = destinoFavorito.getInt("boleia_id");
+            int perfil_id = destinoFavorito.getInt("perfil_id");
+
+
+            auxDestinoFavorito = new DestinoFavorito(id, boleia_id, perfil_id);
+
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return auxDestinoFavorito;
+    }
+
+    public static ArrayList<DestinoFavorito> parserJsonDestinosFavoritos(JSONArray response){
+        ArrayList<DestinoFavorito> destinosFavoritos = new ArrayList<>();
+        try{
+            for (int i=0; i< response.length(); i++){
+
+                JSONObject destinoFavorito = response.getJSONObject(i);
+
+                int id = destinoFavorito.getInt("id");
+                int boleia_id = destinoFavorito.getInt("boleia_id");
+                int perfil_id = destinoFavorito.getInt("perfil_id");
+
+                DestinoFavorito auxDestinoFavorito = new DestinoFavorito(id, boleia_id, perfil_id);
+
+                destinosFavoritos.add(auxDestinoFavorito);
+            }
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        return destinosFavoritos;
     }
 
 
