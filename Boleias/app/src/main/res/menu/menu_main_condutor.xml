@@ -12,6 +12,9 @@
             android:id="@+id/navReservas"
             android:title="@string/navReservas" />
         <item
+            android:id="@+id/navWishlist"
+            android:title="@string/navWishlist" />
+        <item
             android:id="@+id/navViaturas"
             android:title="@string/navViaturas" />
 

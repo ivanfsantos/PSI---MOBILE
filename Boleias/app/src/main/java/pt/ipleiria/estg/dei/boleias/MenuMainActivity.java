@@ -90,8 +90,6 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
     }
 
 
-
-
     private void carregarCabecalho() {
         sharedPreferences = getSharedPreferences("DADOS_USER", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -174,7 +172,7 @@ public class MenuMainActivity extends AppCompatActivity implements NavigationVie
             fragment = new ListaReservasFragment();
         }
         else if (id == R.id.navWishlist) {
-            // fragment = new ListaWishlistFragment();
+            fragment = new ListaDestinosFavoritosFragment();
         }
 
         if (fragment != null) {

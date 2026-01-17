@@ -45,6 +45,13 @@ public class ListaReservasAdaptador extends BaseAdapter {
         return reservas.get(i).getId();
     }
 
+
+
+
+
+
+
+
     @Override
     public View getView(int i, View view, ViewGroup viewGroup)
     {
@@ -68,6 +75,16 @@ public class ListaReservasAdaptador extends BaseAdapter {
 
         return view;
     }
+
+
+
+
+
+
+
+
+
+
 
     private class ViewHolderLista{
 

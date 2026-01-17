@@ -71,6 +71,7 @@ public class AvaliarFragment extends Fragment {
                 );
 
                 Singleton.getInstance(getContext()).adicionarAvaliacaoAPI(token, novaAvaliacao, getContext());
+                Toast.makeText(getContext(), "Comentário feito.", Toast.LENGTH_SHORT).show();
                 requireActivity().getOnBackPressedDispatcher().onBackPressed();
             } else {
                 Toast.makeText(getContext(), "Erro: Condutor não encontrado.", Toast.LENGTH_SHORT).show();

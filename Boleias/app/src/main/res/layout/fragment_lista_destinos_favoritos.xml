@@ -4,12 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ListaReservasFragment"
+    tools:context=".ListaDestinosFavoritosFragment"
     android:fitsSystemWindows="true">
 
 
     <ListView
-        android:id="@+id/lvReservas"
+        android:id="@+id/lvDestinosFavoritos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"

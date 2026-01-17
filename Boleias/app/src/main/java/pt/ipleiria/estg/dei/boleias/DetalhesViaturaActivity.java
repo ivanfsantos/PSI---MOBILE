@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -97,7 +98,7 @@ public class DetalhesViaturaActivity extends AppCompatActivity implements Viatur
             @Override
             public void onClick(View v) {
 
-                if(idViatura!=-1){
+        if(idViatura!=-1){
                     if(isViaturaValido()){
                         viatura.setMarca(etMarca.getText().toString());
                         viatura.setModelo(etModelo.getText().toString());
@@ -128,7 +129,6 @@ public class DetalhesViaturaActivity extends AppCompatActivity implements Viatur
 
     private void getToken() {
         SharedPreferences sharedPreferences = getSharedPreferences("DADOS_USER", Context.MODE_PRIVATE);
-        // Change from "TOKEN" to "token" and "PERFIL_ID" to "perfil_id"
         token = sharedPreferences.getString("token", null);
         perfil_id = sharedPreferences.getString("perfil_id", null);
     }
@@ -136,7 +136,6 @@ public class DetalhesViaturaActivity extends AppCompatActivity implements Viatur
 
 
     private boolean isViaturaValido() {
-
 
         String marca = etMarca.getText().toString();
         String modelo = etModelo.getText().toString();

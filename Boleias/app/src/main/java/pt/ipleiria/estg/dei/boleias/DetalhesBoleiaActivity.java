@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -43,13 +45,16 @@ import java.util.TimeZone;
 import pt.ipleiria.estg.dei.boleias.adaptadores.AvaliacoesAdaptador;
 import pt.ipleiria.estg.dei.boleias.listeners.AvaliacoesListener;
 import pt.ipleiria.estg.dei.boleias.listeners.BoleiaListener;
+import pt.ipleiria.estg.dei.boleias.listeners.ReservasListener;
 import pt.ipleiria.estg.dei.boleias.listeners.ViaturasListener;
 import pt.ipleiria.estg.dei.boleias.modelos.Avaliacao;
 import pt.ipleiria.estg.dei.boleias.modelos.Boleia;
+import pt.ipleiria.estg.dei.boleias.modelos.DestinoFavorito;
+import pt.ipleiria.estg.dei.boleias.modelos.Reserva;
 import pt.ipleiria.estg.dei.boleias.modelos.Singleton;
 import pt.ipleiria.estg.dei.boleias.modelos.Viatura;
 
-public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaListener, ViaturasListener, AvaliacoesListener {
+public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaListener, ViaturasListener, AvaliacoesListener, ReservasListener {
 
     public static final String BOLEIA_ID = "boleia_id";
     private Boleia boleia;
@@ -68,6 +73,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
     private FloatingActionButton fabGuardar;
     private FloatingActionButton fabReservar;
     private FloatingActionButton fabVerReservas;
+    private FloatingActionButton fabAddWishlist;
     private String token;
     private String perfil_id;
     private String condutor;
@@ -77,8 +83,9 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        
+
         setContentView(R.layout.activity_detalhes_boleia);
+
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -88,6 +95,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
                     if (nestedScrollView != null) {
                         nestedScrollView.setVisibility(View.VISIBLE);
                     }
+                    Singleton.getInstance(DetalhesBoleiaActivity.this).setReservasListener(DetalhesBoleiaActivity.this);
                     findViewById(R.id.mainContent).setVisibility(View.VISIBLE);
                     detalhesBoleiaFragment();
                 } else {
@@ -96,12 +104,15 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
                 }
             }
         });
+
         fragmentManager = getSupportFragmentManager();
 
         getInfo();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
 
         etOrigem = findViewById(R.id.etOrigem);
         etDestino = findViewById(R.id.etDestino);
@@ -112,6 +123,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         spViaturas = findViewById(R.id.spViaturas);
         fabReservar = findViewById(R.id.fabReservar);
         fabVerReservas = findViewById(R.id.fabVerReservas);
+        fabAddWishlist = findViewById(R.id.fabAddWishlist);
         rvAvaliacoes = findViewById(R.id.rvAvaliacoes);
         nestedScrollView = findViewById(R.id.nestedScrollView);
 
@@ -120,6 +132,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         Singleton.getInstance(this).setBoleiaListener(this);
         Singleton.getInstance(this).setAvaliacoesListener(this);
         Singleton.getInstance(this).setViaturasListener(this);
+        Singleton.getInstance(this).setReservasListener(this);
 
 
         idBoleia = getIntent().getIntExtra(BOLEIA_ID, -1);
@@ -159,8 +172,10 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
     private void detalhesBoleiaFragment() {
         if (idBoleia != -1) {
             boleia = Singleton.getInstance(this).getBoleia(idBoleia);
+
             if (boleia != null) {
 
+                Singleton.getInstance(this).verificarReservasBoleiaAPI(this, token, idBoleia);
                 Viatura viaturaDono = Singleton.getInstance(this).getViatura(boleia.getViatura_id());
 
                 if (viaturaDono != null) {
@@ -173,6 +188,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
                     fabVerReservas.show();
                     fabGuardar.show();
                     fabReservar.hide();
+                    fabAddWishlist.hide();
                     fabGuardar.setImageResource(R.drawable.ic_action_guardar);
                     fabVerReservas.setImageResource(R.drawable.ic_action_ver_reservas);
                     setFabGuardar();
@@ -181,11 +197,15 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
                 } else {
                     setInputsEnabled(false);
                     fabReservar.show();
+                    fabAddWishlist.show();
                     fabGuardar.hide();
                     fabVerReservas.hide();
 
+
                     fabReservar.setImageResource(R.drawable.ic_action_reservar);
+                    fabAddWishlist.setImageResource(R.drawable.ic_action_add);
                     setFabReservar();
+                    setFabAddWishlist();
                 }
                 setTitle(getString(R.string.txt_detalhes) + " " + boleia.getOrigem() + "->" + boleia.getDestino());
                 etOrigem.setText(boleia.getOrigem());
@@ -201,9 +221,11 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
                     }
                 }
             }
+            invalidateOptionsMenu();
         } else {
             fabGuardar.show();
             fabReservar.hide();
+            fabAddWishlist.hide();
             fabVerReservas.hide();
             fabGuardar.setImageResource(R.drawable.ic_action_add);
             setFabGuardar();
@@ -263,6 +285,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
             fragment.setArguments(args);
 
             findViewById(R.id.mainContent).setVisibility(View.GONE);
+            nestedScrollView.setVisibility(GONE);
             fabGuardar.setVisibility(View.GONE);
             fabReservar.setVisibility(View.GONE);
             fabVerReservas.setVisibility(View.GONE);
@@ -275,10 +298,27 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
 
     }
 
+
+
+    private void setFabAddWishlist() {
+        fabAddWishlist.setOnClickListener(v -> {
+
+            DestinoFavorito destinoFavorito = new DestinoFavorito(
+                    0,
+                    boleia.getId(),
+                    Integer.parseInt(perfil_id)
+            );
+
+            Singleton.getInstance(getApplicationContext()).adicionarDestinoFavoritoAPI(token, destinoFavorito, getApplicationContext());
+        });
+    }
+
+
     private void setFabGuardar(){
         fabGuardar.setOnClickListener(v -> {
             if (isBoleiaValida()) {
                 if (idBoleia == -1) {
+                    rvAvaliacoes.setVisibility(GONE);
                     Boleia novaBoleia = new Boleia(0,
                             etOrigem.getText().toString(),
                             etDestino.getText().toString(),
@@ -376,32 +416,12 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
         return super.onCreateOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        try {
-            MenuItem itemRemover = menu.findItem(R.id.itemRemover);
-            if (itemRemover != null) {
-                if (boleia != null && "1".equals(condutor) && condutorIsDono()) {
-                    itemRemover.setVisible(true);
-                } else {
-                    itemRemover.setVisible(false);
-                }
-            }
-        } catch (Exception e) {
-            MenuItem item = menu.findItem(R.id.itemRemover);
-            if (item != null) item.setVisible(false);
-        }
-        return super.onPrepareOptionsMenu(menu);
-    }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        if("1".equals(condutor)) {
+
             if (item.getItemId() == R.id.itemRemover) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(R.string.txt_remover_boleia)
@@ -422,7 +442,7 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
 
                 return true;
             }
-        }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -501,6 +521,17 @@ public class DetalhesBoleiaActivity extends AppCompatActivity implements BoleiaL
             rvAvaliacoes.setVisibility(View.VISIBLE);
         } else {
             rvAvaliacoes.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onRefreshListaReservas(ArrayList<Reserva> listaReservas) {
+        if (listaReservas != null && !listaReservas.isEmpty()) {
+            setInputsEnabled(false);
+            fabGuardar.hide();
+            if(condutorIsDono()) {
+                Toast.makeText(this, "Edição bloqueada: Esta boleia já possui reservas.", Toast.LENGTH_LONG).show();
+            }
         }
     }
 }
