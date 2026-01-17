@@ -157,9 +157,6 @@ public class Singleton {
         this.avaliacoesListener = avaliacoesListener;
     }
 
-    public void setAvaliacaoListener(AvaliacaoListener avaliacaoListener) {
-        this.avaliacaoListener = avaliacaoListener;
-    }
 
     public void setDestinosFavoritosListener(DestinosFavoritosListener destinosFavoritosListener) {
         this.destinosFavoritosListener = destinosFavoritosListener;
