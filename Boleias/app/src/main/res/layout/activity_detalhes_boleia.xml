@@ -11,125 +11,130 @@
 
     <include layout="@layout/app_bar_main" />
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView"
+    <!-- This container prevents overlapping by using appbar_scrolling_view_behavior -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <!-- FIXED: This is your first LinearLayout. It will NOT scroll. -->
         <LinearLayout
-            android:id="@+id/mainContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:minHeight="100dp"
+            android:orientation="vertical" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
             <LinearLayout
+                android:id="@+id/mainContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="100dp"
-                android:orientation="vertical" />
+                android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="#8BC34A"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <EditText
-                    android:id="@+id/etOrigem"
+                <!-- Second Layout (Scrollable) -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Origem"
-                    android:inputType="text"
-                    android:minHeight="48dp" />
+                    android:backgroundTint="#8BC34A"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <EditText
-                    android:id="@+id/etDestino"
+                    <EditText
+                        android:id="@+id/etOrigem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Origem"
+                        android:inputType="text"
+                        android:minHeight="48dp" />
+
+                    <EditText
+                        android:id="@+id/etDestino"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Destino"
+                        android:inputType="text"
+                        android:minHeight="48dp" />
+
+                    <EditText
+                        android:id="@+id/etData_hora"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Data e Hora"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:inputType="none"
+                        android:minHeight="48dp" />
+
+                    <EditText
+                        android:id="@+id/etLugares_disponiveis"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Lugares Disponíveis"
+                        android:inputType="text"
+                        android:minHeight="48dp" />
+
+                    <EditText
+                        android:id="@+id/etPreco"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="Preco"
+                        android:inputType="number"
+                        android:minHeight="48dp" />
+
+                    <Spinner
+                        android:id="@+id/spViaturas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        tools:listitem="@android:layout/simple_spinner_item" />
+                </LinearLayout>
+
+                <!-- Third Layout (Scrollable) -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Destino"
-                    android:inputType="text"
-                    android:minHeight="48dp" />
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:background="#F5F5F5">
 
-                <EditText
-                    android:id="@+id/etData_hora"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Data e Hora"
-                    android:focusable="false"
-                    android:clickable="true"
-                    android:inputType="none"
-                    android:minHeight="48dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Avaliações e Comentários"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#333333"
+                        android:layout_marginBottom="12dp"/>
 
-                <EditText
-                    android:id="@+id/etLugares_disponiveis"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Lugares Disponíveis"
-                    android:inputType="text"
-                    android:minHeight="48dp" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvAvaliacoes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        tools:listitem="@android:layout/simple_list_item_2" />
 
-                <EditText
-                    android:id="@+id/etPreco"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Preco"
-                    android:inputType="number"
-                    android:minHeight="48dp" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp" />
 
-                <Spinner
-                    android:id="@+id/spViaturas"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp"
-                    tools:listitem="@android:layout/simple_spinner_item" />
+                </LinearLayout>
             </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp"
-                android:background="#F5F5F5">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Avaliações e Comentários"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#333333"
-                    android:layout_marginBottom="12dp"/>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvAvaliacoes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    tools:listitem="@android:layout/simple_list_item_2" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
-    <FrameLayout
-        android:id="@+id/contentFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
+    <!-- FABs remain in CoordinatorLayout so they stay on top of everything -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabGuardar"
         android:layout_width="wrap_content"
@@ -162,5 +167,18 @@
         app:backgroundTint="#FFEB3B"
         app:srcCompat="@drawable/ic_action_ver_reservas"
         app:tint="#FFFFFF" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddWishlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="48dp"
+        app:fabSize="normal"
+        app:backgroundTint="#03A9F4"
+        app:srcCompat="@drawable/ic_action_add"
+        app:tint="#FFFFFF" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

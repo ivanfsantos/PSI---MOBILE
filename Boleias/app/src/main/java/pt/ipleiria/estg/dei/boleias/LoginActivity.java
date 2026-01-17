@@ -14,6 +14,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import pt.ipleiria.estg.dei.boleias.listeners.LoginListener;
 import pt.ipleiria.estg.dei.boleias.modelos.Singleton;
 
@@ -21,6 +23,7 @@ public class LoginActivity extends AppCompatActivity implements LoginListener {
 
     private EditText etUsername, etPassword;
     private Button btnLogin;
+    private FloatingActionButton fabConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +41,18 @@ public class LoginActivity extends AppCompatActivity implements LoginListener {
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
+        fabConfig = findViewById(R.id.fabConfig);
 
         Singleton.getInstance(getApplicationContext()).setLoginListener(this);
+
+
+        fabConfig.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, ConfigActivity.class);
+                startActivity(intent);
+            }
+        });
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override

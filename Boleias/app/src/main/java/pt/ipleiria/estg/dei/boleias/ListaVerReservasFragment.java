@@ -55,6 +55,7 @@ public class ListaVerReservasFragment extends Fragment implements ReservasListen
         lvReservasCondutor = view.findViewById(R.id.lvReservasCondutor);
         fabValidar = view.findViewById(R.id.fabValidar);
 
+
         setHasOptionsMenu(true);
         getInfo();
 

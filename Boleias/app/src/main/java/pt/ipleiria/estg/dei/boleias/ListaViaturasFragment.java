@@ -54,7 +54,7 @@ public class ListaViaturasFragment extends Fragment implements ViaturasListener 
         View view = inflater.inflate(R.layout.fragment_lista_viaturas, container, false);
 
         lvViaturas = view.findViewById(R.id.lvViaturas);
-        fabLista = view.findViewById(R.id.fabRemover);
+        fabLista = view.findViewById(R.id.fabAdicionar);
 
         setHasOptionsMenu(true);
         getInfo();

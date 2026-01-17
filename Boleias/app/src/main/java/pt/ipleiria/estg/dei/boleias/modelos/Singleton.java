@@ -2,6 +2,7 @@ package pt.ipleiria.estg.dei.boleias.modelos;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -55,15 +56,15 @@ public class Singleton {
 
 
 
-
     private static RequestQueue volleyQueue;
 
-    private String mUrlApiLogin = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/auth";
-    private String mUrlApiViatura = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/viatura";
-    private String mUrlApiBoleia = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/boleia";
-    private String mUrlApiReserva = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/reserva";
-    private String mUrlApiAvaliacao = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/avaliacao";
-    private String mUrlApiDestinoFavorito = "http://192.168.1.75/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api/destino-favorito";
+
+    private String mUrlApiLogin;
+    private String mUrlApiViatura;
+    private String mUrlApiBoleia;
+    private String mUrlApiReserva;
+    private String mUrlApiAvaliacao;
+    private String mUrlApiDestinoFavorito;
 
 
     private LoginListener loginListener;
@@ -87,6 +88,29 @@ public class Singleton {
         reservas = new ArrayList<>();
         avaliacoes = new ArrayList<>();
         destinosFavoritos = new ArrayList<>();
+
+        SharedPreferences prefs = context.getSharedPreferences("CONFIGS", Context.MODE_PRIVATE);
+        String ipGuardado = prefs.getString("IP_SERVIDOR", "192.168.1.75");
+        configurarUrls(ipGuardado);
+    }
+
+    public void configurarUrls(String ip) {
+        String path;
+
+        if (ip.equals("192.168.1.75")) {
+            path = "/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api";
+        } else {
+            path = "/PSI---WEB/boleias/backend/web/api";
+        }
+
+        String baseUrl = "http://" + ip + path;
+
+        this.mUrlApiLogin = baseUrl + "/auth";
+        this.mUrlApiViatura = baseUrl + "/viatura";
+        this.mUrlApiBoleia = baseUrl + "/boleia";
+        this.mUrlApiReserva = baseUrl + "/reserva";
+        this.mUrlApiAvaliacao = baseUrl + "/avaliacao";
+        this.mUrlApiDestinoFavorito = baseUrl + "/destino-favorito";
     }
 
 
@@ -288,7 +312,7 @@ public class Singleton {
 
                 @Override
                 public void onResponse(String s) {
-                    Viatura viatura = JSONParser.parserJsonViatura(s);
+                   Viatura viatura = JSONParser.parserJsonViatura(s);
                     adicionarViaturaBD(viatura);
                     if (viaturaListener != null){
                         viaturaListener.onRefreshDetalhes(MenuMainActivity.ADD);
@@ -385,10 +409,18 @@ public class Singleton {
 
 
     public void adicionarViaturaBD(Viatura viatura){
-        Viatura auxViatura = boleiasBD.adicionarViaturaBD(viatura);
-        if (auxViatura != null){
-            viaturas.add(auxViatura);
-        }
+        if (viatura == null) return;
+
+        final Viatura v = viatura;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Viatura auxViatura = boleiasBD.adicionarViaturaBD(v);
+                if (auxViatura != null){
+                    viaturas.add(auxViatura);
+                }
+            }
+        }).start();
     }
 
     public void adicionarViaturasPerfilBD(ArrayList<Viatura> viaturas) {
@@ -640,11 +672,21 @@ public class Singleton {
     }
 
 
+
     public void adicionarBoleiaBD(Boleia boleia){
-        Boleia auxBoleia = boleiasBD.adicionarBoleiaBD(boleia);
-        if (auxBoleia != null){
-            boleias.add(auxBoleia);
-        }
+
+        if(boleia == null) return;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Boleia auxBoleia = boleiasBD.adicionarBoleiaBD(boleia);
+                if (auxBoleia != null){
+                    boleias.add(auxBoleia);
+                }
+            }
+        }).start();
+
     }
 
     public void adicionarBoleiasBD(ArrayList<Boleia> boleias) {
@@ -762,6 +804,28 @@ public class Singleton {
             volleyQueue.add(request);
         }
     }
+
+    public void verificarReservasBoleiaAPI(final Context context, String tokenAPI, int boleiaId) {
+        String url = mUrlApiReserva + "/reservas?access-token=" + tokenAPI + "&boleia_id=" + boleiaId;
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
+                response -> {
+                    try {
+                        JSONArray jsonArray = response.getJSONArray("data");
+                        boolean temReservas = jsonArray.length() > 0;
+
+                        if (reservasListener != null) {
+                            ArrayList<Reserva> lista = JSONParser.parserJsonReservas(jsonArray);
+                            reservasListener.onRefreshListaReservas(lista);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                },
+                error -> { });
+        volleyQueue.add(request);
+    }
+
 
 
 
@@ -913,10 +977,19 @@ public class Singleton {
 
 
     public void adicionarReservaBD(Reserva reserva){
-        Reserva auxReserva = boleiasBD.adicionarReservaBD(reserva);
-        if (auxReserva != null){
-            reservas.add(auxReserva);
-        }
+
+        if(reserva == null) return;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Reserva auxReserva = boleiasBD.adicionarReservaBD(reserva);
+                if (auxReserva != null){
+                    reservas.add(auxReserva);
+                }
+            }
+        }).start();
+
     }
 
     public void adicionarReservasBD(ArrayList<Reserva> reservas) {
@@ -1040,10 +1113,18 @@ public class Singleton {
 
 
     public void adicionarAvaliacaoBD(Avaliacao avaliacao){
-        Avaliacao auxAvaliacao = boleiasBD.adicionarAvaliacaoBD(avaliacao);
-        if (auxAvaliacao != null){
-            avaliacoes.add(auxAvaliacao);
-        }
+        if(avaliacao == null)return;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Avaliacao auxAvaliacao = boleiasBD.adicionarAvaliacaoBD(avaliacao);
+                if (auxAvaliacao != null){
+                    avaliacoes.add(auxAvaliacao);
+                }
+            }
+        }).start();
+
     }
 
 
@@ -1208,10 +1289,19 @@ public class Singleton {
     }
 
     public void adicionarDestinoFavoritoBD(DestinoFavorito destinoFavorito){
-        DestinoFavorito auxDestinoFavorito = boleiasBD.adicionarDestinoFavoritoBD(destinoFavorito);
-        if (auxDestinoFavorito != null){
-            destinosFavoritos.add(auxDestinoFavorito);
-        }
+
+        if(destinoFavorito == null) return;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DestinoFavorito auxDestinoFavorito = boleiasBD.adicionarDestinoFavoritoBD(destinoFavorito);
+                if (auxDestinoFavorito != null){
+                    destinosFavoritos.add(auxDestinoFavorito);
+                }
+            }
+        }).start();
+
     }
 
 

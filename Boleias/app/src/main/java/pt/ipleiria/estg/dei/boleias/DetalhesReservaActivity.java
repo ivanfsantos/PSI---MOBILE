@@ -1,6 +1,5 @@
 package pt.ipleiria.estg.dei.boleias;
 
-import static android.view.View.GONE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -41,7 +40,6 @@ public class DetalhesReservaActivity extends AppCompatActivity implements Reserv
     private FloatingActionButton fabRemover;
     private FloatingActionButton fabAvaliarCondutor;
     private String token;
-    private String perfil_id;
 
 
     @Override
@@ -49,6 +47,7 @@ public class DetalhesReservaActivity extends AppCompatActivity implements Reserv
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_detalhes_reserva);
+
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -96,6 +95,7 @@ public class DetalhesReservaActivity extends AppCompatActivity implements Reserv
 
         idReserva = getIntent().getIntExtra(RESERVA_ID, -1);
 
+
         if (idReserva != -1) {
             reserva = Singleton.getInstance(this).getReserva(idReserva);
             boleia = Singleton.getInstance(this).getBoleia(reserva.getBoleia_id());
@@ -110,7 +110,14 @@ public class DetalhesReservaActivity extends AppCompatActivity implements Reserv
             etPontoEncontro.setText(reserva.getPonto_encontro());
             etReembolso.setText(String.valueOf(reserva.getReembolso()));
             etEstado.setText(reserva.getEstado());
+
+            if (boleia.getIsFechada() == 0){
+                fabAvaliarCondutor.hide();
+            }
+
         }
+
+
 
         fabRemover.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,8 +164,6 @@ public class DetalhesReservaActivity extends AppCompatActivity implements Reserv
 
         SharedPreferences sharedPreferences = getSharedPreferences("DADOS_USER", Context.MODE_PRIVATE);
         token = sharedPreferences.getString("token", null);
-        perfil_id = sharedPreferences.getString("perfil_id", null);
-
     }
 
     private void setInputsEnabled(boolean enabled) {

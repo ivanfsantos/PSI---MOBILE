@@ -12,60 +12,61 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-
 import java.util.ArrayList;
 
+import pt.ipleiria.estg.dei.boleias.adaptadores.ListaDestinosFavoritosAdaptador;
 import pt.ipleiria.estg.dei.boleias.adaptadores.ListaReservasAdaptador;
 import pt.ipleiria.estg.dei.boleias.listeners.BoleiasListener;
+import pt.ipleiria.estg.dei.boleias.listeners.DestinosFavoritosListener;
 import pt.ipleiria.estg.dei.boleias.listeners.ReservasListener;
+import pt.ipleiria.estg.dei.boleias.listeners.ViaturasListener;
 import pt.ipleiria.estg.dei.boleias.modelos.Boleia;
-import pt.ipleiria.estg.dei.boleias.modelos.Reserva;
+import pt.ipleiria.estg.dei.boleias.modelos.DestinoFavorito;
 import pt.ipleiria.estg.dei.boleias.modelos.Singleton;
+import pt.ipleiria.estg.dei.boleias.modelos.Viatura;
 
+public class ListaDestinosFavoritosFragment extends Fragment implements DestinosFavoritosListener {
 
-public class ListaReservasFragment extends Fragment implements ReservasListener {
-
-    private ListView lvReservas;
-    private ListaReservasAdaptador adaptador;
+    private ListView lvDestinosFavoritos;
+    private ListaDestinosFavoritosAdaptador adaptador;
     private String token;
     private String perfil_id;
 
 
-    public ListaReservasFragment()
+    public ListaDestinosFavoritosFragment()
     {
+
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_lista_destinos_favoritos, container, false);
 
-        View view = inflater.inflate(R.layout.fragment_lista_reservas, container, false);
-
-        lvReservas = view.findViewById(R.id.lvReservas);
+        lvDestinosFavoritos = view.findViewById(R.id.lvDestinosFavoritos);
 
         setHasOptionsMenu(true);
+
         getInfo();
 
-
-        Singleton.getInstance(getContext()).setReservasListener(this);
+        Singleton.getInstance(getContext()).setDestinosFavoritosListener(this);
+        Singleton.getInstance(getContext()).getAllDestinosFavoritosAPI(getContext(), token, perfil_id);
         Singleton.getInstance(getContext()).getAllBoleiasAPI(getContext(), token);
-        Singleton.getInstance(getContext()).getAllReservasAPI(getContext(), token, perfil_id);
 
 
-        lvReservas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lvDestinosFavoritos.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent intent = new Intent (getContext(), DetalhesReservaActivity.class);
-                intent.putExtra(DetalhesReservaActivity.RESERVA_ID, (int) id);
+                Intent intent = new Intent (getContext(), DetalhesDestinoFavoritoActivity.class);
+                intent.putExtra(DetalhesDestinoFavoritoActivity.DESTINO_FAVORITO_ID, (int) id);
                 startActivityForResult(intent, MenuMainActivity.DEL);
             }
         });
@@ -76,39 +77,22 @@ public class ListaReservasFragment extends Fragment implements ReservasListener 
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-
-            }
-        };
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
-    }
-
-
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (resultCode == Activity.RESULT_OK) {
+            Singleton.getInstance(getContext()).getAllDestinosFavoritosAPI(getContext(), token, perfil_id);
 
-        if (resultCode == Activity.RESULT_OK){
-
-            Singleton.getInstance(getContext()).getAllReservasAPI(getContext(), token, perfil_id);
-
-            if (requestCode == MenuMainActivity.EDIT && data != null) {
-                int operacaoRealizada = data.getIntExtra("OPERACAO", MenuMainActivity.EDIT);
-
+            if (data != null) {
+                int operacaoRealizada = data.getIntExtra("OPERACAO", -1);
                 if (operacaoRealizada == MenuMainActivity.DEL) {
-                    Toast.makeText(getContext(), R.string.reserva_removida_com_sucesso, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.boleia_removida_da_wishlist, Toast.LENGTH_SHORT).show();
                 }
             }
-
         }
 
     }
+
 
 
     private void getInfo() {
@@ -117,13 +101,13 @@ public class ListaReservasFragment extends Fragment implements ReservasListener 
         perfil_id = sharedPreferences.getString("perfil_id", null);
     }
 
+
     @Override
-    public void onRefreshListaReservas(ArrayList<Reserva> listaReservas) {
-        if (listaReservas != null) {
-            adaptador = new ListaReservasAdaptador(getContext(), listaReservas);
-            lvReservas.setAdapter(adaptador);
+    public void onRefreshListaDestinosFavoritos(ArrayList<DestinoFavorito> listaDestinosFavoritos) {
+        if (listaDestinosFavoritos != null) {
+            adaptador = new ListaDestinosFavoritosAdaptador(getContext(), listaDestinosFavoritos);
+            lvDestinosFavoritos.setAdapter(adaptador);
         }
     }
-
 
 }
