@@ -90,14 +90,14 @@ public class Singleton {
         destinosFavoritos = new ArrayList<>();
 
         SharedPreferences prefs = context.getSharedPreferences("CONFIGS", Context.MODE_PRIVATE);
-        String ipGuardado = prefs.getString("IP_SERVIDOR", "192.168.1.75");
+        String ipGuardado = prefs.getString("IP_SERVIDOR", "192.168.42.110");
         configurarUrls(ipGuardado);
     }
 
     public void configurarUrls(String ip) {
         String path;
 
-        if (ip.equals("192.168.1.75")) {
+        if (ip.equals("192.168.42.110")) {
             path = "/PROJETOS/boleias/web/PSI-WEB/boleias/backend/web/api";
         } else {
             path = "/PSI---WEB/boleias/backend/web/api";
@@ -226,6 +226,10 @@ public class Singleton {
     // singleton viaturas
     public void getAllViaturasAPI(final Context context, String tokenAPI) {
         if (!JSONParser.isConnectionInternet(context)) {
+            getViaturasBD();
+            if (viaturasListener != null) {
+                viaturasListener.onRefreshListaViaturas(viaturas);
+            }
             Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
         }
         else {
@@ -263,6 +267,10 @@ public class Singleton {
 
     public void getAllViaturasPerfilAPI(final Context context, String tokenAPI, String perfil_id) {
         if (!JSONParser.isConnectionInternet(context)) {
+            getViaturasPerfilBD(Integer.parseInt(perfil_id));
+            if (viaturasListener != null) {
+                viaturasListener.onRefreshListaViaturas(viaturas);
+            }
             Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
         }
         else {
@@ -489,6 +497,10 @@ public class Singleton {
     // singleton boleias
     public void getAllBoleiasAPI(final Context context, String tokenAPI) {
         if (!JSONParser.isConnectionInternet(context)) {
+            getBoleiasBD();
+            if (boleiasListener != null) {
+                boleiasListener.onRefreshListaBoleias(boleias);
+            }
             Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
         }
         else {
@@ -727,6 +739,10 @@ public class Singleton {
     // singleton reservas
     public void getAllReservasAPI(final Context context, String tokenAPI, String perfil_id) {
         if (!JSONParser.isConnectionInternet(context)) {
+            getReservasBD();
+            if (reservasListener != null) {
+                reservasListener.onRefreshListaReservas(reservas);
+            }
             Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
         }
         else {
@@ -1036,6 +1052,10 @@ public class Singleton {
 
     public void getAllAvaliacoesAPI(final Context context, String tokenAPI, String perfil_id) {
         if (!JSONParser.isConnectionInternet(context)) {
+            getAvaliacoesBD();
+            if (avaliacoesListener != null) {
+                avaliacoesListener.onRefreshListaAvaliacoes(avaliacoes);
+            }
             Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
         }
         else {
@@ -1143,6 +1163,10 @@ public class Singleton {
 
     public void getAllDestinosFavoritosAPI(final Context context, String tokenAPI, String perfil_id) {
         if (!JSONParser.isConnectionInternet(context)) {
+            getDestinosFavoritosBD();
+            if (destinosFavoritosListener != null) {
+                destinosFavoritosListener.onRefreshListaDestinosFavoritos(destinosFavoritos);
+            }
             Toast.makeText(context, R.string.erro_ligacao_internet, Toast.LENGTH_SHORT).show();
         }
         else {
@@ -1264,6 +1288,11 @@ public class Singleton {
 
             volleyQueue.add(request);
         }
+    }
+
+    public ArrayList<DestinoFavorito> getDestinosFavoritosBD() {
+        destinosFavoritos = boleiasBD.getAllDestinosFavoritosBD();
+        return new ArrayList<>(destinosFavoritos);
     }
 
     public void removerDestinoFavoritoBD(int idReserva){

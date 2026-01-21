@@ -36,7 +36,7 @@ public class ConfigActivity extends AppCompatActivity {
         btnConfig = findViewById(R.id.btnConfig);
 
         SharedPreferences prefs = getSharedPreferences("CONFIGS", MODE_PRIVATE);
-        String ipAtual = prefs.getString("IP_SERVIDOR", "192.168.1.75");
+        String ipAtual = prefs.getString("IP_SERVIDOR", "192.168.42.110");
 
         if (ipAtual.equals("172.22.21.244")) {
             switchServer.setChecked(true);
@@ -53,7 +53,7 @@ public class ConfigActivity extends AppCompatActivity {
                 if (switchServer.isChecked()) {
                     ipSelecionado = "172.22.21.244";
                 } else {
-                    ipSelecionado = "192.168.1.75";
+                    ipSelecionado = "192.168.42.110";
                 }
 
 

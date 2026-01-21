@@ -79,7 +79,7 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:hint="Lugares Disponíveis"
-                        android:inputType="text"
+                        android:inputType="number"
                         android:minHeight="48dp" />
 
                     <EditText

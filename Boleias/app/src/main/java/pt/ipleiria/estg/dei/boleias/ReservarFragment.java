@@ -53,6 +53,10 @@ public class ReservarFragment extends Fragment {
                 Toast.makeText(getContext(), "Preencha os campos todos.", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (contactoStr.length() != 9) {
+                etContacto.setError("O contacto deve ter 9 dígitos");
+                return;
+            }
 
             try {
                 int contactoInt = Integer.parseInt(contactoStr);
